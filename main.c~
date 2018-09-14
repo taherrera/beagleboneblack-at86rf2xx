@@ -36,7 +36,6 @@
 #define SEL_CS 0
 
 
-
 void at86rf2xx_eventHandler() {
 	/* One less event to handle! */
 	at86rf2xx.events--;
