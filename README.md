@@ -1,7 +1,7 @@
 # arduino-at86rf233
 Simple Arduino driver for the AT86RF233 802.15.4 radio module
 
-This is a C++ port of the AT86RF233 driver from [RIOT-OS](https://github.com/RIOT-OS/RIOT) and [arduino-at86rf233.ino](https://github.com/msolters/arduino-at86rf233/blob/master/arduino-at86rf233.ino)
+This is a C++ port of the AT86RF233 driver from [RIOT-OS](https://github.com/RIOT-OS/RIOT) and [arduino-at86rf233](https://github.com/msolters/arduino-at86rf233/blob/master/arduino-at86rf233.ino)
 
 ## Radio Hardware
 Designed to be used with ATMEL's AT86RF233 802.15.4 radio, [available as a $30USB radio extension board (REB)](http://www.mouser.com/ProductDetail/Atmel/ATREB233-XPRO/?qs=HVbQlW5zcXX%2FEgqNxRIBfA%3D%3D).
