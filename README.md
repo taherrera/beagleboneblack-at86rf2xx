@@ -17,12 +17,19 @@ Here's the wiring setup.
 BBB          Extension Board  | (AT86RF2xx)
 
 GPIO\_60 (12)   --- 7 PWM(+)    | (8 RSTN) 
+
 GPIO\_48 (15)   --- 9 IRQ/GPIO  | (24 IRQ)
+
 GPIO\_49 (23)   --- 10          | (11 SLP_TR)
+
 SPIO\_CSO (17)  --- 23 SPI_SS_A | (23 SEL)
+
 SPIO\_D1 (18)   --- 16 SPI_MOSI | (22 MOSI)
+
 SPIO\_DO (21)   --- 17 SPI_MISO | (20 MISO)
+
 SPIO\_SLCK (22) --- 18 SPI_SCK  | (19 SCLK)
+
 
 
 ## Driver Configuration
