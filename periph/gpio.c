@@ -32,6 +32,10 @@ int gpio_init(gpio_t pin, gpio_mode_t mode)
 			defined = 1;
 		} 
 	}
+	#ifdef DEBUG
+	printf("gpio_init: defined = %d \n", defined);
+	printf("gpio_init: defined_pins_counter = %d \n", defined_pins_counter);
+	#endif
 
 	/* Increase number of pins defined as gpio */
 
@@ -47,9 +51,17 @@ int gpio_init(gpio_t pin, gpio_mode_t mode)
 			return 1;
 		}
 
+		#ifdef DEBUG
+		printf("gpio_init: Creating gpio %d using export fileptr: %s \n", pin);
+		#endif
+
 		/* Create gpio{$pin} file */
 		fprintf(fptr,"%d",pin);
 	}
+
+	#ifdef DEBUG
+	printf("gpio_init: defined_pins_counter = %d \n", defined_pins_counter);
+	#endif
 
 	char gpio_file_path[30];
 	sprintf(gpio_file_path,"/sys/class/gpio/gpio%d/direction",pin);

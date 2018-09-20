@@ -15,6 +15,7 @@
 #include "../../periph/gpio.h"
 
 #define GPIO 66 // pin 9 in P8
+#define DEBUG
 
 int main(void)
 {
