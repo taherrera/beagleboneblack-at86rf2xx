@@ -128,6 +128,9 @@ void gpio_write(gpio_t pin, int value)
 		return;
 	}
 	
+	#ifdef DEBUG
+	printf("gpio_write: Writing %d to file %p",value, gpio_file_path);
+	#endif
 	fprintf(fptr,"%d",value);
 	
 }
