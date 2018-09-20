@@ -68,7 +68,7 @@ int gpio_init(gpio_t pin, gpio_mode_t mode)
 	{
 		fprintf(fptr,"out");
 	}else{
-		printf("Error: GPIO mode %d not defined\n", mode);
+		printf("Error: GPIO mode %d not defined \n", mode);
 		fclose(fptr);
 		return 1;
 	}
@@ -93,7 +93,9 @@ void gpio_write(gpio_t pin, int value)
 
 	if (!defined)
 	{
-		printf("Error: gpio pin mode not defined");
+		printf("Error: gpio pin &d not defined \n",pin);
+		for (i=0;i<defined_pins_counter;i++)
+			printf("Warning: defined pins are: %d",defined_pins[i]);
 		return;
 	}
 
@@ -104,7 +106,7 @@ void gpio_write(gpio_t pin, int value)
 	fptr = fopen(gpio_file_path,"w");
 	if (fptr == NULL)
 	{
-		printf("Error Reading gpio_file_path");
+		printf("Error: Reading gpio_file_path: %s", gpio_file_path);
 		return;
 	}
 	
