@@ -53,7 +53,7 @@ int gpio_init(gpio_t pin, gpio_mode_t mode)
 		}
 
 		#ifdef DEBUG
-		printf("gpio_init: Creating gpio %d using export fileptr: %s \n", fptr);
+		printf("gpio_init: Creating gpio %d using export fileptr: %s \n",pin, fptr);
 		#endif
 
 		/* Create gpio{$pin} file */
@@ -124,13 +124,13 @@ void gpio_write(gpio_t pin, int value)
 	fptr = fopen(gpio_file_path,"w");
 	if (fptr == NULL)
 	{
-		printf("Error: Reading gpio_file_path: %s", gpio_file_path);
+		printf("Error: Reading gpio_file_path: %s \n", gpio_file_path);
 		return;
 	}
 	
 	#ifdef DEBUG
-	printf("gpio_write: Writing %d to file %p",value, gpio_file_path);
+	printf("gpio_write: Writing %d to file %p \n",value, gpio_file_path);
 	#endif
-	fprintf(fptr,"%d",value);
+	fprintf(fptr,value);
 	
 }
