@@ -20,14 +20,18 @@
  * @author      Kaspar Schleiser <kaspar@schleiser.de>
  * @author      Oliver Hahm <oliver.hahm@inria.fr>
  * @author      Mark Solters <msolters@gmail.com>
- *
+ * @author      Tomás Herrera <taherrera@uc.cl>
+ * 
  * @}
  */
 
-#include <Arduino.h>
-#include <SPI.h>
+#include <stdio.h>
+
+#include "../periph/gpio.h"
+#include "../periph/spi.h"
 
 #include "at86rf2xx.h"
+
 
 /*  Declare radio device as globally scoped struct  */
 AT86RF2XX at86rf2xx = AT86RF2XX();
@@ -45,59 +49,57 @@ AT86RF2XX::AT86RF2XX() {}
 
 int AT86RF2XX::init(int cs_pin_, int int_pin_, int sleep_pin_, int reset_pin_)
 {
-    Serial.println("[at86rf2xx] Booting radio device.");
+	printf("[at86rf2xx] Booting radio device.\n");
 
-    /* initialize device descriptor */
-    cs_pin = cs_pin_;
-    int_pin = int_pin_;
-    sleep_pin = sleep_pin_;
-    reset_pin = reset_pin_;
-    idle_state = AT86RF2XX_STATE_TRX_OFF;
-    state = AT86RF2XX_STATE_SLEEP;
+	/* initialize device descriptor */
+	cs_pin = cs_pin_;
+	int_pin = int_pin_;
+	sleep_pin = sleep_pin_;
+	reset_pin = reset_pin_;
+	idle_state = AT86RF2XX_STATE_TRX_OFF;
+	state = AT86RF2XX_STATE_SLEEP;
 
-    /* setup GPIOs */
-    pinMode(reset_pin, OUTPUT);
-    pinMode(sleep_pin, OUTPUT);
-    pinMode(int_pin, INPUT);
-    pinMode(cs_pin, OUTPUT);
+	/* setup GPIOs */
+	gpio_init(reset_pin, (gpio_mode_t) GPIO_OUT);
+	gpio_init(sleep_pin, (gpio_mode_t) GPIO_OUT);
+	gpio_init(int_pin, (gpio_mode_t) GPIO_IN);
+	gpio_init(cs_pin, (gpio_mode_t) GPIO_OUT);
 
-    /* initialise SPI */
-    //  Set up SPI
-    SPI.begin();
-    //  Data is transmitted and received MSB first
-    SPI.setBitOrder(MSBFIRST);
-    //  SPI interface will run at 1MHz if 8MHz chip or 2Mhz if 16Mhz
-    SPI.setClockDivider(SPI_CLOCK_DIV8);
-    //  Data is clocked on the rising edge and clock is low when inactive
-    SPI.setDataMode(SPI_MODE0);
+	/* initialise SPI */
+	//  Set up SPI
+	spi_init(spi_t bus);
+	//  Data is transmitted and received MSB first
+	SPI.setBitOrder(MSBFIRST);
+	//  SPI interface will run at 5MHZ
+	SPI.setClockDivider((spi_clk_t) SPI_CLK_5MHZ);
+	//  Data is clocked on the rising edge and clock is low when inactive
+	SPI.setDataMode((spi_mode_t) SPI_MODE_0);
 
-    /*  wait for SPI to be ready  */
-    delay(10);
+	/*  wait for SPI to be ready  */
+	delay(10);
 
-    /*  initialize GPIOs */
-    digitalWrite(sleep_pin, LOW);
-    digitalWrite(reset_pin, HIGH);
-    digitalWrite(cs_pin, HIGH);
-    attachInterrupt(digitalPinToInterrupt(int_pin), at86rf2xx_irq_handler, RISING);
+	/*  initialize GPIOs */
+	gpio_write(sleep_pin, 0);
+	gpio_write(reset_pin, 1);
+	gpio_write(cs_pin, 1);
+	attachInterrupt(digitalPinToInterrupt(int_pin), at86rf2xx_irq_handler, RISING);
 
-    /* make sure device is not sleeping, so we can query part number */
-    assert_awake();
+	/* make sure device is not sleeping, so we can query part number */
+	assert_awake();
 
-    /* test if the SPI is set up correctly and the device is responding */
-    byte part_num = reg_read(AT86RF2XX_REG__PART_NUM);
-    if (part_num != AT86RF233_PARTNUM) {
-        Serial.println("[at86rf2xx] Error: unable to read correct part number.");
-        return -1;
-    }
-    Serial.print("[at86rf2xx] Detected part #: 0x");
-    Serial.println(part_num, HEX);
-    Serial.print("[at86rf2xx] Version: 0x");
-    Serial.println(reg_read(AT86RF2XX_REG__VERSION_NUM), HEX);
+	/* test if the SPI is set up correctly and the device is responding */
+	uint8_t part_num = reg_read(AT86RF2XX_REG__PART_NUM);
+	if (part_num != AT86RF233_PARTNUM) {
+		printf("[at86rf2xx] Error: unable to read correct part number.\n");
+		return -1;
+	}
+	printf("[at86rf2xx] Detected part #: %d\n",part_num);
+	printf("[at86rf2xx] Version: %d",reg_read(AT86RF2XX_REG__VERSION_NUM));
 
-    /* reset device to default values and put it into RX state */
-    reset();
+	/* reset device to default values and put it into RX state */
+	reset();
 
-    return 0;
+	return 0;
 }
 
 void AT86RF2XX::reset()
@@ -144,7 +146,7 @@ void AT86RF2XX::reset()
     at86rf2xx_reg_write(AT86RF2XX_REG__TRX_CTRL_1, tmp);*/
 
     /* disable clock output to save power */
-    byte tmp = reg_read(AT86RF2XX_REG__TRX_CTRL_0);
+    uint8_t tmp = reg_read(AT86RF2XX_REG__TRX_CTRL_0);
     tmp &= ~(AT86RF2XX_TRX_CTRL_0_MASK__CLKM_CTRL);
     tmp &= ~(AT86RF2XX_TRX_CTRL_0_MASK__CLKM_SHA_SEL);
     tmp |= (AT86RF2XX_TRX_CTRL_0_CLKM_CTRL__OFF);
@@ -159,7 +161,7 @@ void AT86RF2XX::reset()
     /* go into RX state */
     set_state(AT86RF2XX_STATE_RX_AACK_ON);
 
-    Serial.println("[at86rf2xx] Reset complete.");
+    printf("[at86rf2xx] Reset complete.\n");
 }
 
 bool AT86RF2XX::cca()
@@ -192,7 +194,7 @@ size_t AT86RF2XX::send(uint8_t *data, size_t len)
 {
     /* check data length */
     if (len > AT86RF2XX_MAX_PKT_LENGTH) {
-        Serial.println("[at86rf2xx] Error: Data to send exceeds max packet size.");
+        printf("[at86rf2xx] Error: Data to send exceeds max packet size.\n");
         return 0;
     }
     AT86RF2XX::tx_prepare();
