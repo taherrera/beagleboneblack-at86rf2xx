@@ -15,7 +15,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
-#include <unistd.h>
+
 
 static gpio_t defined_pins[100];
 static int defined_pins_counter = 0;
@@ -58,8 +58,8 @@ int gpio_init(gpio_t pin, gpio_mode_t mode)
 
 		/* Create gpio{$pin} file */
 		fprintf(fptr,"%d",pin);
+		fclose(fptr);
 		
-		sleep(1);
 	}
 
 	#ifdef DEBUG
@@ -76,7 +76,6 @@ int gpio_init(gpio_t pin, gpio_mode_t mode)
 		return 1;
 	}
 
-	sleep(1);
 
 	if (mode == (gpio_mode_t) GPIO_IN)	
 	{
