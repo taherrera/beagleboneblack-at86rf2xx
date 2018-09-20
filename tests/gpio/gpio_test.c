@@ -12,9 +12,10 @@
  */
 
 #include <stdio.h>
+#include <unistd.h>
 #include "../../periph/gpio.h"
 
-#define GPIO 66 // pin 9 in P8
+#define GPIO 66 // pin 7 in P8
 
 
 int main(void)
@@ -25,8 +26,11 @@ int main(void)
 		return 0;
 	}
 	gpio_write((gpio_t) GPIO, 0);
+	sleep(1);
 	gpio_write((gpio_t) GPIO, 1);
+	sleep(1);
 	gpio_write((gpio_t) GPIO, 0);
+	sleep(1);
 	gpio_write((gpio_t) GPIO, 1);
 	
 	return 0;
