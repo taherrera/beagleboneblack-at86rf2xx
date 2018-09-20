@@ -131,6 +131,7 @@ void gpio_write(gpio_t pin, int value)
 	#ifdef DEBUG
 	printf("gpio_write: Writing %d to file %p \n",value, gpio_file_path);
 	#endif
-	fprintf(fptr,value);
+	
+	fprintf(fptr,(char) value);
 	
 }
