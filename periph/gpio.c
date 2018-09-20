@@ -93,9 +93,9 @@ void gpio_write(gpio_t pin, int value)
 
 	if (!defined)
 	{
-		printf("Error: gpio pin &d not defined \n",pin);
+		printf("Error: gpio pin %d not defined \n",pin);
 		for (i=0;i<defined_pins_counter;i++)
-			printf("Warning: defined pins are: %d",defined_pins[i]);
+			printf("Warning: defined pins are: %d \n",defined_pins[i]);
 		return;
 	}
 
