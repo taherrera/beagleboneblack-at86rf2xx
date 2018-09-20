@@ -3,5 +3,5 @@
 while true;
 do
 ./gpio_test
-sleep 7
+sleep 1
 done
