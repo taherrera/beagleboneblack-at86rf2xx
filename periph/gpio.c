@@ -57,7 +57,7 @@ int gpio_init(gpio_t pin, gpio_mode_t mode)
 	fptr = fopen(gpio_file_path,"w");
 	if (fptr == NULL)
 	{
-		printf("Error Reading gpio_file_path\n");
+		printf("Error Reading gpio_file_path: %s \n",gpio_file_path);
 		return 1;
 	}
 
