@@ -68,7 +68,7 @@ int gpio_init(gpio_t pin, gpio_mode_t mode)
 	{
 		fprintf(fptr,"out");
 	}else{
-		printf("Error: GPIO mode not defined\n");
+		printf("Error: GPIO mode %d not defined\n", mode);
 		fclose(fptr);
 		return 1;
 	}
