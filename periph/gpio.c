@@ -133,5 +133,5 @@ void gpio_write(gpio_t pin, int value)
 	#endif
 	
 	fprintf(fptr,"%d",value);
-	
+	fclose(fptr);
 }
