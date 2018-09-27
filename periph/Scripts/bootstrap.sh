@@ -1,10 +1,12 @@
 #!/bin/bash
 
+BASEDIR=$(dirname $0)
+
 # Compile .dtbo for configuring pins
 
-dtc -O dtb -o BB-SPI1-01-00A0.dtbo -b 0 -@ BB-SPI1-01-00A0.dts 
+dtc -O dtb -o ${BASEDIR}/BB-SPI1-01-00A0.dtbo -b 0 -@ ${BASEDIR}/BB-SPI1-01-00A0.dts 
 
-cp BB-SPI1-01-00A0.dtbo /lib/firmware/
+cp ${BASEDIR}/BB-SPI1-01-00A0.dtbo /lib/firmware/
 
 #enable device tree overlay
 
