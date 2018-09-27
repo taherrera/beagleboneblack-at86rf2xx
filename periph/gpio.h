@@ -30,9 +30,18 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include "periph_cpu.h"
+#include "periph_conf.h"
 
+#ifndef HAVE_GPIO_T
+
+/**
+ * @brief   GPIO type identifier
+ */
 typedef unsigned int gpio_t;
+#endif
 
+#ifndef HAVE_GPIO_MODE_T
 typedef enum {
     GPIO_IN ,               /**< configure as input without pull resistor */
     GPIO_IN_PD,             /**< configure as input with pull-down resistor */
@@ -43,7 +52,7 @@ typedef enum {
     GPIO_OD_PU              /**< configure as output in open-drain mode with
                              *   pull resistor enabled */
 } gpio_mode_t;
-
+#endif
 
 /**
  * @brief   Initialize the given pin as general purpose input or output
