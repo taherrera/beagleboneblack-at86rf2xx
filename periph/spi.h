@@ -53,6 +53,7 @@
 #ifndef PERIPH_SPI_H
 #define PERIPH_SPI_H
 
+
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -114,6 +115,7 @@ typedef gpio_t spi_cs_t;
 /**
  * @brief   Status codes used by the SPI driver interface
  */
+
 enum {
     SPI_OK          =  0,   /**< everything went as planned */
     SPI_NODEV       = -1,   /**< invalid SPI bus specified */
@@ -138,6 +140,7 @@ enum {
  * - MODE_3: CPOL=1, CPHA=1 - The first data bit is sampled by the receiver on
  *           the second falling SCK edge.
  */
+
 #ifndef HAVE_SPI_MODE_T
 typedef enum {
     SPI_MODE_0 = 0,         /**< CPOL=0, CPHA=0 */

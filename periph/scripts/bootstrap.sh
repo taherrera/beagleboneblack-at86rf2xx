@@ -1,5 +1,7 @@
 #!/bin/bash
 
+## This script enables spi chipselect 0 on bus 1
+
 BASEDIR=$(dirname $0)
 
 # Compile .dtbo for configuring pins
@@ -18,7 +20,6 @@ echo optargs=quiet drm.debug=7 >> /boot/uEnv.txt
 echo capemgr.enable_partno=BB-SPI0-01 >> /boot/uEnv.txt
 
 # Reset the BBB
-
-reboot
+#reboot
 
 

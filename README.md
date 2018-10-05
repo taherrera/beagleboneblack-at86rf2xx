@@ -14,7 +14,7 @@ In this example, we will be using a BeagleBoneBlack.
 
 Here's the wiring setup.
 
-BBB          Extension Board  | (AT86RF2xx)
+BBB            Extension Board  | (AT86RF2xx)
 
 GPIO\_60 (12)   --- 7 PWM(+)    | (8 RSTN) 
 

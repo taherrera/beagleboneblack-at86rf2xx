@@ -16,45 +16,95 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
+#include <time.h>
+#include <getopt.h>
 #include <fcntl.h>
 #include <unistd.h>
+
+#include <sys/stat.h>
 #include <sys/ioctl.h>
+
 #include <linux/types.h>
 #include <linux/spi/spidev.h>
 
-static uint8_t running;
+#include "spi.h"
+
+#define UENVDIR "/boot/uEnv.txt"
+#define ENABLESPI "capemgr.enable_partno=BB-SPI0-01"
+
 static int spidev_fd;
+static char device[] = "/dev/spidev%d.0"; 
+static struct spi_ioc_transfer tr;
+static spi_mode_t spi_mode;
 
-int SPI_setMaxFrequency(int spidev_fd, uint32_t frequency) {
-  if (ioctl(spidev_fd, SPI_IOC_WR_MAX_SPEED_HZ, &frequency) < 0) return -1;
-  return 0;
+void spi_init(spi_t bus)
+{
+
+	char buff[30];
+	sprintf(buff, device, bus);
+	spidev_fd = open(buff,O_RDWR);
+	printf("file name: %s\nfile descriptor: %d\n",buff,spidev_fd);
+	return;
 }
 
-/**
- * @brief Sets the given SPI bus per the AD7390's required configuration
- *
- * @param spi_fd SPI bus file descriptor
- */
-void spi_init(spi_t bus) {
-
-  // TODO: change file descriptor for spi_t
-  SPI_setMaxFrequency(spi_fd, AD7390_FREQ);
-  SPI_setBitsPerWord(spi_fd, AD7390_BITS);
-  SPI_setClockMode(spi_fd, AD7390_CLOCKMODE);
-  SPI_setCSActiveHigh(spi_fd);
-  SPI_setBitOrder(spi_fd, SPI_MSBFIRST);
+void spi_init_pins(spi_t bus)
+{
+	(void) bus;
+	return;
 }
 
-/**
- * @brief Sets the output of the AD7390 in the range 0-4095
- *
- * @param spi_fd SPI bus file descriptor
- * @param value DAC value in range 0-4095
- */
-void AD7390_setValue(int spi_fd, uint16_t value) {
-  SPI_write(spi_fd, (void*) &value, 1);
+int spi_init_cs(spi_t bus, spi_cs_t cs)
+{
+	(void) bus;
+	(void) cs;
+	return 1;
+
+}
+
+int spi_acquire(spi_t bus, spi_cs_t cs, spi_mode_t mode, spi_clk_t clk)
+{
+	(void) bus;
+	(void) cs;
+	spi_mode = mode;
+	tr.speed_hz = clk;
+	return 1;
+
+}
+
+void spi_release(spi_t bus)
+{
+	(void) bus;
+	return;
+}
+
+uint8_t spi_transfer_byte(spi_t bus, spi_cs_t cs, bool cont, uint8_t out)
+{
+	(void) bus;
+	(void) cs;
+	(void) cont;
+	(void) out;
 }
 
 
+void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont, const void *out, void *in, size_t len)
+{
+	int ret;
+	int out_fd;
+	tr.tx_buf = (unsigned long)out;
+	tr.rx_buf = (unsigned long)in;
+	tr.len = len;
+	tr.delay_usecs = 0;
+	tr.bits_per_word = 8;
+
+	
+	ret = ioctl(spidev_fd, SPI_IOC_MESSAGE(2), &tr);
+	
+	if (ret < 1){
+		error("can't send spi message");
+	}
+	
+
+}
 
