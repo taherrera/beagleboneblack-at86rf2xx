@@ -37,6 +37,7 @@ static int spidev_fd;
 static char device[] = "/dev/spidev%d.0"; 
 static struct spi_ioc_transfer tr;
 static spi_mode_t spi_mode;
+static int ret;
 
 void spi_init(spi_t bus)
 {
@@ -67,7 +68,33 @@ int spi_acquire(spi_t bus, spi_cs_t cs, spi_mode_t mode, spi_clk_t clk)
 {
 	(void) bus;
 	(void) cs;
-	spi_mode = mode;
+	if (mode == (spi_mode_t) SPI_MODE0)
+	{
+		spi_mode = SPI_MODE_0;
+	}else if(mode == (spi_mode_t) SPI_MODE1)
+        { 
+		spi_mode = SPI_MODE_1;
+        }else if(mode == (spi_mode_t) SPI_MODE2)
+        { 
+		spi_mode = SPI_MODE_2;
+        }else if(mode == (spi_mode_t) SPI_MODE3)
+        { 
+		spi_mode = SPI_MODE_3;
+        }else{
+		error("SPI mode %d not defined",spi_mode);
+	}
+
+	/*
+	 * Set SPI mode
+	 */
+	ret = ioctl(spidev_fd , SPI_IOC_WR_MODE, &spi_mode);
+	if (ret == -1)
+		error("can't set spi mode");
+
+	ret = ioctl(spidev_fd , SPI_IOC_RD_MODE, &spi_mode);
+	if (ret == -1)
+		error("can't get spi mode");
+
 	tr.speed_hz = clk;
 	return 1;
 
@@ -84,7 +111,7 @@ uint8_t spi_transfer_byte(spi_t bus, spi_cs_t cs, bool cont, uint8_t out)
 	(void) bus;
 	(void) cs;
 	(void) cont;
-	int ret;
+	//int ret;
         int out_fd;
 	
         tr.tx_buf = (uint32_t) &out;
@@ -101,19 +128,19 @@ uint8_t spi_transfer_byte(spi_t bus, spi_cs_t cs, bool cont, uint8_t out)
 
 void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont, const void *out, void *in, size_t len)
 {
-	int ret;
-	int out_fd;
+
 	tr.tx_buf = (const uint32_t) out;
 	tr.rx_buf = (uint32_t) in;
 	tr.len = len;
 
+	/* Make a Transfer */
 	ret = ioctl(spidev_fd, SPI_IOC_MESSAGE(2), &tr);
 
 	if (ret < 1){
 		error("can't send spi message");
 	}
 
-	memset(in, tr.rx_buf, sizeof(tr.rx_buf));
+	//memcpy(in, (uint64_t *) tr.rx_buf, len);
 
 }
 
