@@ -3,15 +3,15 @@
 #define SPI_FREQ SPI_CLK_1MHZ // in Hz
 #define CLOCKMODE 3      // 
 #define CONT 0
-#define MESSAGE "hello"
+#define MESSAGE "@PQ"
 
 #include "../../periph/spi.h"
 
 int main() {
 	spi_init(SPI_BUS);
 	spi_acquire(SPI_BUS, SPI_CS , CLOCKMODE, SPI_FREQ);
-	const char outbuff[100] = MESSAGE;
-	char inbuff[10];
+	const char outbuff[4] = MESSAGE;
+	char inbuff[2];
 	spi_transfer_bytes(SPI_BUS, SPI_CS, CONT, (void*) outbuff, (void*) inbuff, sizeof(MESSAGE));
 	
 }
