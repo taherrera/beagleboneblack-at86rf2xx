@@ -1,9 +1,8 @@
 /**
- * @file spi_ad7390.c
- * @author Alex Hiam - <alex@graycat.io>
+ * @file spi.c
  * @author Tomás Herrera - <taherrera@uc.cl>
  *
- * @brief Uses serbus as SPI interface.
+ * @brief Uses spidev as SPI interface.
  *
  * Requires an SPI Kernel driver be loaded to expose a /dev/spidevX.Y
  * interface and an AD7390 be connected on the SPI bus.
@@ -12,7 +11,7 @@
  *
  */
 
-
+ 
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
@@ -45,7 +44,8 @@ void spi_init(spi_t bus)
 	char buff[30];
 	sprintf(buff, device, bus);
 	spidev_fd = open(buff,O_RDWR);
-	printf("file name: %s\nfile descriptor: %d\n",buff,spidev_fd);
+	tr.delay_usecs = 0;
+        tr.bits_per_word = 8;
 	return;
 }
 
@@ -84,7 +84,17 @@ uint8_t spi_transfer_byte(spi_t bus, spi_cs_t cs, bool cont, uint8_t out)
 	(void) bus;
 	(void) cs;
 	(void) cont;
-	(void) out;
+	int ret;
+        int out_fd;
+        tr.tx_buf = (uint8_t) out;
+
+        ret = ioctl(spidev_fd, SPI_IOC_MESSAGE(2), &tr);
+
+        if (ret < 1){
+                error("can't send spi message");
+        }
+
+	return ret;
 }
 
 
@@ -92,19 +102,17 @@ void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont, const void *out, void
 {
 	int ret;
 	int out_fd;
-	tr.tx_buf = (unsigned long)out;
-	tr.rx_buf = (unsigned long)in;
+	tr.tx_buf = (const uint8_t) out;
+	tr.rx_buf = (uint8_t) in;
 	tr.len = len;
-	tr.delay_usecs = 0;
-	tr.bits_per_word = 8;
 
-	
 	ret = ioctl(spidev_fd, SPI_IOC_MESSAGE(2), &tr);
-	
+
 	if (ret < 1){
 		error("can't send spi message");
 	}
-	
+
+	memset(in, tr.rx_buf, sizeof(tr.rx_buf));
 
 }
 
