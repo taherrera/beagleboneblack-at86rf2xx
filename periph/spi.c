@@ -111,10 +111,11 @@ uint8_t spi_transfer_byte(spi_t bus, spi_cs_t cs, bool cont, uint8_t out)
 	(void) bus;
 	(void) cs;
 	(void) cont;
-	//int ret;
-        int out_fd;
-	
+
+	tr.len = 1;	
         tr.tx_buf = (uint32_t) &out;
+	uint8_t inbuf;
+	tr.rx_buf = (uint32_t) &inbuf;
 
         ret = ioctl(spidev_fd, SPI_IOC_MESSAGE(2), &tr);
 
@@ -122,7 +123,7 @@ uint8_t spi_transfer_byte(spi_t bus, spi_cs_t cs, bool cont, uint8_t out)
                 error("can't send spi message");
         }
 
-	return (uint8_t) ret;
+	return (uint8_t) inbuf;
 }
 
 

@@ -23,14 +23,14 @@
  * @author      Kaspar Schleiser <kaspar@schleiser.de>
  * @author      Daniel Krebs <github@daniel-krebs.net>
  * @author      Mark Solters <msolters@gmail.com>
+ * @author      Tomás Herrera <taherrera@uc.cl>
  */
 
 #ifndef AT86RF2XX_H_
 #define AT86RF2XX_H_
 
-#include <Arduino.h>
 #include <stdint.h>
-#include "ieee802154.h"
+#include "../802.15.14/ieee802154.h"
 #include "at86rf2xx-registers.h"
 #include "at86rf2xx-defaults.h"
 

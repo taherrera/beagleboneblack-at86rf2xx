@@ -9,6 +9,13 @@
 #define CONT 0
 #define MESSAGENUM 0
 
+// Transfering bytes one by one does not work
+// i.e. transferbyte(..) function
+// Since running  SPI through userspace
+// is too slow. :(
+// Solution: use transferbytes(...) function.
+
+#define TRANSFERBYTES
 
 int main() {
 	spi_init(SPI_BUS);
@@ -38,13 +45,14 @@ int main() {
 			break;
 	}
 	const char outbuff[2] = {AT86RF2XX_ACCESS_REG | byte0, byte1};
-
-	//printf("Before output: %x, addr: %x\n", *inbuff, inbuff);
+	#ifdef TRANSFERBYTES
 	spi_transfer_bytes(SPI_BUS, SPI_CS, CONT, (void*) outbuff, (void*) inbuff, 2);
-	printf("Partnum should be %x (reset value), outputing: %x, %x \n",outstr,inbuff[0],inbuff[1]);
-	//const char outbuff_2[2] = {AT86RF2XX_ACCESS_READ,AT86RF2XX_REG__VERSION_NUM};
-        //char inbuff_2[1] = {0};
-        //spi_transfer_bytes(SPI_BUS, SPI_CS, CONT, (void*) outbuff_2, (void*) inbuff_2, 2);
-	//printf("Version should be 0x01 (reset value), outputin: %x\n",*inbuff_2);
+	printf("Should be %x (reset value), outputing: %x, %x \n",outstr,inbuff[0],inbuff[1]);
+	#else
+	uint8_t out;
+        spi_transfer_byte(SPI_BUS, SPI_CS, CONT, (uint8_t) outbuff[0]);
+	out = spi_transfer_byte(SPI_BUS, SPI_CS, CONT, (uint8_t) outbuff[1]);
+        printf("Should be %x (reset value), outputing: %x \n",outstr,out);
+	#endif
 	return 1;
 }
