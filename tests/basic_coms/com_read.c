@@ -10,9 +10,8 @@
 #define MESSAGENUM 0
 
 // Transfering bytes one by one does not work
-// i.e. transferbyte(..) function
-// Since running  SPI through userspace
-// is too slow. :(
+// i.e. transferbyte(..) function because of CS
+// functionality
 // Solution: use transferbytes(...) function.
 
 #define TRANSFERBYTES
@@ -47,7 +46,7 @@ int main() {
 	const char outbuff[2] = {AT86RF2XX_ACCESS_REG | byte0, byte1};
 	#ifdef TRANSFERBYTES
 	spi_transfer_bytes(SPI_BUS, SPI_CS, CONT, (void*) outbuff, (void*) inbuff, 2);
-	printf("Should be %x (reset value), outputing: %x, %x \n",outstr,inbuff[0],inbuff[1]);
+	printf("Should be %x (reset value), outputing: %x \n",outstr,inbuff[0]);
 	#else
 	uint8_t out;
         spi_transfer_byte(SPI_BUS, SPI_CS, CONT, (uint8_t) outbuff[0]);

@@ -112,7 +112,7 @@ uint8_t spi_transfer_byte(spi_t bus, spi_cs_t cs, bool cont, uint8_t out)
 	(void) cs;
 	(void) cont;
 
-	tr.len = 1;	
+	tr.len = 1;
         tr.tx_buf = (uint32_t) &out;
 	uint8_t inbuf;
 	tr.rx_buf = (uint32_t) &inbuf;
@@ -131,7 +131,13 @@ void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont, const void *out, void
 {
 
 	tr.tx_buf = (const uint32_t) out;
-	tr.rx_buf = (uint32_t) in;
+
+	/* ioctl copies len bytes into rx_buf,
+         * and sizeof(in) could be len -1
+	 * so we need an auxin buffer */
+	uint8_t auxin[2048];
+	tr.rx_buf = (uint32_t) auxin;
+
 	tr.len = len;
 
 	/* Make a Transfer */
@@ -141,7 +147,8 @@ void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont, const void *out, void
 		error("can't send spi message");
 	}
 
-	//memcpy(in, (uint64_t *) tr.rx_buf, len);
-
+	/* The first byte read is always 0, correct this */
+	memmove(in, auxin + 1,sizeof in - sizeof *in);
+	
 }
 
