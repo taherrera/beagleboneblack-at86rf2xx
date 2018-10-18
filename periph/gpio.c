@@ -141,3 +141,28 @@ void gpio_write(gpio_t pin, int value)
 	fprintf(fptr,"%d",value);
 	fclose(fptr);
 }
+
+int gpio_read(gpio_t pin)
+{
+	if (_check(pin))
+		return;
+
+	char gpio_file_path[30];
+	sprintf(gpio_file_path,"/sys/class/gpio/gpio%d/value",pin);
+
+	FILE *fptr;
+	fptr = fopen(gpio_file_path,"r");
+	if (fptr == NULL)
+	{
+		printf("Error: Reading gpio_file_path: %s \n", gpio_file_path);
+		return;
+	}
+	
+	#ifdef DEBUG
+	printf("gpio_write: Writing %d to file %p \n",value, gpio_file_path);
+	#endif
+	
+	int c = fgetc(fptr);
+	fclose(fptr);
+	return c;
+}
