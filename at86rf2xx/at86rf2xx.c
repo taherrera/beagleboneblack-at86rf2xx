@@ -26,28 +26,43 @@
  */
 
 #include <stdio.h>
-
+#include <time.h>
 #include "../periph/gpio.h"
 #include "../periph/spi.h"
 
 #include "at86rf2xx.h"
 
 
-/*  Declare radio device as globally scoped struct  */
-AT86RF2XX at86rf2xx = AT86RF2XX();
+static int cs_pin;                         /**< chip select pin */
+static int sleep_pin;                      /**< sleep pin */
+static int reset_pin;                      /**< reset pin */
+static int int_pin;                        /**< external interrupt pin */
+static uint8_t state;                      /**< current state of the radio */
+static uint8_t seq_nr;                     /**< sequence number to use next */
+static uint8_t frame_len;                  /**< length of the current TX frame */
+static uint16_t pan;                       /**< currently used PAN ID */
+static uint8_t chan;                       /**< currently used channel */
+//#ifdef MODULE_AT86RF212B
+//    at86rf2xx_freq_t freq;              /**< currently used frequency */
+//#endif
+static uint8_t addr_short[2];              /**< the radio's short address */
+static uint8_t addr_long[8];               /**< the radio's long address */
+static uint16_t options;                   /**< state of used options */
+static uint8_t idle_state;                 /**< state to return to after sending */
+
+
 
 /**
  * @brief   Increments events count by  1.
  */
 static void at86rf2xx_irq_handler()
 {
-    at86rf2xx.events++;
+    events++;
     return;
 }
 
-AT86RF2XX::AT86RF2XX() {}
 
-int AT86RF2XX::init(int cs_pin_, int int_pin_, int sleep_pin_, int reset_pin_)
+int init(int cs_pin_, int int_pin_, int sleep_pin_, int reset_pin_)
 {
 	printf("[at86rf2xx] Booting radio device.\n");
 
@@ -63,7 +78,8 @@ int AT86RF2XX::init(int cs_pin_, int int_pin_, int sleep_pin_, int reset_pin_)
 	gpio_init(reset_pin, (gpio_mode_t) GPIO_OUT);
 	gpio_init(sleep_pin, (gpio_mode_t) GPIO_OUT);
 	gpio_init(int_pin, (gpio_mode_t) GPIO_IN);
-	gpio_init(cs_pin, (gpio_mode_t) GPIO_OUT);
+	
+	//gpio_init(cs_pin, (gpio_mode_t) GPIO_OUT); automatically set by spi
 
 	/* initialise SPI */
 	//  Set up SPI
@@ -82,7 +98,9 @@ int AT86RF2XX::init(int cs_pin_, int int_pin_, int sleep_pin_, int reset_pin_)
 	gpio_write(sleep_pin, 0);
 	gpio_write(reset_pin, 1);
 	gpio_write(cs_pin, 1);
-	attachInterrupt(digitalPinToInterrupt(int_pin), at86rf2xx_irq_handler, RISING);
+
+	/* TODO: atachInterrupt */
+	//attachInterrupt(digitalPinToInterrupt(int_pin), at86rf2xx_irq_handler, RISING);
 
 	/* make sure device is not sleeping, so we can query part number */
 	assert_awake();
@@ -102,7 +120,7 @@ int AT86RF2XX::init(int cs_pin_, int int_pin_, int sleep_pin_, int reset_pin_)
 	return 0;
 }
 
-void AT86RF2XX::reset()
+void reset()
 {
     hardware_reset();
 
@@ -164,7 +182,7 @@ void AT86RF2XX::reset()
     printf("[at86rf2xx] Reset complete.\n");
 }
 
-bool AT86RF2XX::cca()
+bool cca()
 {
     uint8_t tmp;
     uint8_t status;
@@ -190,7 +208,7 @@ bool AT86RF2XX::cca()
     }
 }
 
-size_t AT86RF2XX::send(uint8_t *data, size_t len)
+size_t send(uint8_t *data, size_t len)
 {
     /* check data length */
     if (len > AT86RF2XX_MAX_PKT_LENGTH) {
@@ -203,7 +221,7 @@ size_t AT86RF2XX::send(uint8_t *data, size_t len)
     return len;
 }
 
-void AT86RF2XX::tx_prepare()
+void tx_prepare()
 {
     uint8_t state;
 
@@ -224,7 +242,7 @@ void AT86RF2XX::tx_prepare()
     frame_len = IEEE802154_FCS_LEN;
 }
 
-size_t AT86RF2XX::tx_load(uint8_t *data,
+size_t tx_load(uint8_t *data,
                          size_t len, size_t offset)
 {
     frame_len += (uint8_t)len;
@@ -232,7 +250,7 @@ size_t AT86RF2XX::tx_load(uint8_t *data,
     return offset + len;
 }
 
-void AT86RF2XX::tx_exec()
+void tx_exec()
 {
     /* write frame length field in FIFO */
     sram_write(0, &(frame_len), 1);
@@ -243,7 +261,7 @@ void AT86RF2XX::tx_exec()
     }*/
 }
 
-size_t AT86RF2XX::rx_len()
+size_t rx_len()
 {
     uint8_t phr;
     fb_read(&phr, 1);
@@ -252,7 +270,7 @@ size_t AT86RF2XX::rx_len()
     return (size_t)((phr & 0x7f) - 2);
 }
 
-void AT86RF2XX::rx_read(uint8_t *data, size_t len, size_t offset)
+void rx_read(uint8_t *data, size_t len, size_t offset)
 {
     /* when reading from SRAM, the different chips from the AT86RF2xx family
      * behave differently: the AT86F233, the AT86RF232 and the ATRF86212B return

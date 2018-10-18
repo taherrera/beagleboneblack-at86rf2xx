@@ -46,7 +46,7 @@ void spi_init(spi_t bus)
 	sprintf(buff, device, bus);
 	spidev_fd = open(buff,O_RDWR);
 	tr.delay_usecs = 0;
-        tr.bits_per_word = 8;
+    tr.bits_per_word = 8;
 	return;
 }
 

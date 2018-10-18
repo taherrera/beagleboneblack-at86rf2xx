@@ -71,12 +71,12 @@ static const uint8_t dbm_to_tx_pow[] = {0x0f, 0x0f, 0x0f, 0x0e, 0x0e, 0x0e,
                                         0x05, 0x03, 0x00};
 #endif
 
-uint16_t AT86RF2XX::get_addr_short()
+uint16_t get_addr_short()
 {
     return (addr_short[0] << 8) | addr_short[1];
 }
 
-void AT86RF2XX::set_addr_short(uint16_t addr)
+void set_addr_short(uint16_t addr)
 {
     addr_short[0] = addr >> 8;
     addr_short[1] = addr & 0xff;
@@ -86,7 +86,7 @@ void AT86RF2XX::set_addr_short(uint16_t addr)
                         addr_short[1]);
 }
 
-uint64_t AT86RF2XX::get_addr_long()
+uint64_t get_addr_long()
 {
     uint64_t addr;
     uint8_t *ap = (uint8_t *)(&addr);
@@ -96,7 +96,7 @@ uint64_t AT86RF2XX::get_addr_long()
     return addr;
 }
 
-void AT86RF2XX::set_addr_long(uint64_t addr)
+void set_addr_long(uint64_t addr)
 {
     for (int i = 0; i < 8; i++) {
         addr_long[i] = (addr >> ((7 - i) * 8));
@@ -104,12 +104,12 @@ void AT86RF2XX::set_addr_long(uint64_t addr)
     }
 }
 
-uint8_t AT86RF2XX::get_chan()
+uint8_t get_chan()
 {
     return chan;
 }
 
-void AT86RF2XX::set_chan(uint8_t channel)
+void set_chan(uint8_t channel)
 {
     uint8_t tmp;
 
@@ -125,12 +125,12 @@ void AT86RF2XX::set_chan(uint8_t channel)
 }
 
 #ifdef MODULE_AT86RF212B
-at86rf2xx_freq_t AT86RF2XX::get_freq()
+at86rf2xx_freq_t get_freq()
 {
     return freq;
 }
 
-void AT86RF2XX::set_freq(at86rf2xx_freq_t freq_)
+void set_freq(at86rf2xx_freq_t freq_)
 {
     uint8_t trx_ctrl2 = 0, rf_ctrl0 = 0;
     trx_ctrl2 = reg_read(AT86RF2XX_REG__TRX_CTRL_2);
@@ -167,12 +167,12 @@ void AT86RF2XX::set_freq(at86rf2xx_freq_t freq_)
 }
 #endif
 
-uint16_t AT86RF2XX::get_pan()
+uint16_t get_pan()
 {
     return pan;
 }
 
-void AT86RF2XX::set_pan(uint16_t pan_)
+void set_pan(uint16_t pan_)
 {
     pan = pan_;
     //DEBUG("pan0: %u, pan1: %u\n", (uint8_t)pan, pan >> 8);
@@ -180,7 +180,7 @@ void AT86RF2XX::set_pan(uint16_t pan_)
     reg_write(AT86RF2XX_REG__PAN_ID_1, (pan >> 8));
 }
 
-int16_t AT86RF2XX::get_txpower()
+int16_t get_txpower()
 {
 #ifdef MODULE_AT86RF212B
     uint8_t txpower = reg_read(AT86RF2XX_REG__PHY_TX_PWR);
@@ -192,7 +192,7 @@ int16_t AT86RF2XX::get_txpower()
 #endif
 }
 
-void AT86RF2XX::set_txpower(int16_t txpower)
+void set_txpower(int16_t txpower)
 {
 #ifdef MODULE_AT86RF212B
     txpower += 25;
@@ -230,12 +230,12 @@ void AT86RF2XX::set_txpower(int16_t txpower)
 #endif
 }
 
-uint8_t AT86RF2XX::get_max_retries()
+uint8_t get_max_retries()
 {
     return (reg_read(AT86RF2XX_REG__XAH_CTRL_0) >> 4);
 }
 
-void AT86RF2XX::set_max_retries(uint8_t max)
+void set_max_retries(uint8_t max)
 {
     max = (max > 7) ? 7 : max;
     uint8_t tmp = reg_read(AT86RF2XX_REG__XAH_CTRL_0);
@@ -244,7 +244,7 @@ void AT86RF2XX::set_max_retries(uint8_t max)
     reg_write(AT86RF2XX_REG__XAH_CTRL_0, tmp);
 }
 
-uint8_t AT86RF2XX::get_csma_max_retries()
+uint8_t get_csma_max_retries()
 {
     uint8_t tmp;
     tmp  = reg_read(AT86RF2XX_REG__XAH_CTRL_0);
@@ -253,7 +253,7 @@ uint8_t AT86RF2XX::get_csma_max_retries()
     return tmp;
 }
 
-void AT86RF2XX::set_csma_max_retries(int8_t retries)
+void set_csma_max_retries(int8_t retries)
 {
     retries = (retries > 5) ? 5 : retries; /* valid values: 0-5 */
     retries = (retries < 0) ? 7 : retries; /* max < 0 => disable CSMA (set to 7) */
@@ -265,7 +265,7 @@ void AT86RF2XX::set_csma_max_retries(int8_t retries)
     reg_write(AT86RF2XX_REG__XAH_CTRL_0, tmp);
 }
 
-void AT86RF2XX::set_csma_backoff_exp(uint8_t min, uint8_t max)
+void set_csma_backoff_exp(uint8_t min, uint8_t max)
 {
     max = (max > 8) ? 8 : max;
     min = (min > max) ? max : min;
@@ -274,7 +274,7 @@ void AT86RF2XX::set_csma_backoff_exp(uint8_t min, uint8_t max)
     reg_write(AT86RF2XX_REG__CSMA_BE, (max << 4) | (min));
 }
 
-void AT86RF2XX::set_csma_seed(uint8_t entropy[2])
+void set_csma_seed(uint8_t entropy[2])
 {
     if(entropy == NULL) {
         //DEBUG("[at86rf2xx] opt: CSMA seed entropy is nullpointer\n");
@@ -290,7 +290,7 @@ void AT86RF2XX::set_csma_seed(uint8_t entropy[2])
     reg_write(AT86RF2XX_REG__CSMA_SEED_1, tmp);
 }
 
-void AT86RF2XX::set_option(uint16_t option, bool state)
+void set_option(uint16_t option, bool state)
 {
     uint8_t tmp;
 
@@ -379,14 +379,14 @@ void AT86RF2XX::set_option(uint16_t option, bool state)
     }
 }
 
-inline void AT86RF2XX::_set_state(uint8_t state_)
+inline void _set_state(uint8_t state_)
 {
     reg_write(AT86RF2XX_REG__TRX_STATE, state_);
     while (get_status() != state_);
     state = state_;
 }
 
-void AT86RF2XX::set_state(uint8_t state_)
+void set_state(uint8_t state_)
 {
     uint8_t old_state = get_status();
 
@@ -427,7 +427,7 @@ void AT86RF2XX::set_state(uint8_t state_)
     }
 }
 
-void AT86RF2XX::reset_state_machine()
+void reset_state_machine()
 {
     uint8_t old_state;
 
