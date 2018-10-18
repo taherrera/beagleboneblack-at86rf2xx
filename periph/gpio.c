@@ -120,9 +120,7 @@ static bool _check(pin)
 
 void gpio_write(gpio_t pin, int value)
 {
-	if (_check(pin))
-		printf("Error");
-		return;
+	_check(pin)
 
 	char gpio_file_path[30];
 	sprintf(gpio_file_path,"/sys/class/gpio/gpio%d/value",pin);
