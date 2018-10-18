@@ -121,6 +121,7 @@ static bool _check(pin)
 void gpio_write(gpio_t pin, int value)
 {
 	if (_check(pin))
+		printf("Error");
 		return;
 
 	char gpio_file_path[30];
