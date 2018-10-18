@@ -27,11 +27,14 @@
 
 #include <stdio.h>
 #include <time.h>
+#include <stdlib.h>
 #include "../periph/gpio.h"
 #include "../periph/spi.h"
+#include "../periph/periph_cpu.h"
 
 #include "at86rf2xx.h"
 
+#define BUS 1
 
 static int cs_pin;                         /**< chip select pin */
 static int sleep_pin;                      /**< sleep pin */
@@ -83,13 +86,13 @@ int init(int cs_pin_, int int_pin_, int sleep_pin_, int reset_pin_)
 
 	/* initialise SPI */
 	//  Set up SPI
-	spi_init(spi_t bus);
+	spi_init((spi_t) BUS);
 	//  Data is transmitted and received MSB first
-	SPI.setBitOrder(MSBFIRST);
+	//SPI.setBitOrder(MSBFIRST);
 	//  SPI interface will run at 5MHZ
-	SPI.setClockDivider((spi_clk_t) SPI_CLK_5MHZ);
+	//SPI.setClockDivider((spi_clk_t) SPI_CLK_5MHZ);
 	//  Data is clocked on the rising edge and clock is low when inactive
-	SPI.setDataMode((spi_mode_t) SPI_MODE_0);
+	//SPI.setDataMode((spi_mode_t) SPI_MODE_0);
 
 	/*  wait for SPI to be ready  */
 	delay(10);
@@ -215,9 +218,9 @@ size_t send(uint8_t *data, size_t len)
         printf("[at86rf2xx] Error: Data to send exceeds max packet size.\n");
         return 0;
     }
-    AT86RF2XX::tx_prepare();
-    AT86RF2XX::tx_load(data, len, 0);
-    AT86RF2XX::tx_exec();
+    tx_prepare();
+    tx_load(data, len, 0);
+    tx_exec();
     return len;
 }
 

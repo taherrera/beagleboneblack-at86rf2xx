@@ -30,7 +30,9 @@
 #define AT86RF2XX_H_
 
 #include <stdint.h>
-#include "../802.15.14/ieee802154.h"
+#include <stdlib.h>
+#include <stdbool.h>
+#include "../802.15.4/ieee802154.h"
 #include "at86rf2xx-registers.h"
 #include "at86rf2xx-defaults.h"
 

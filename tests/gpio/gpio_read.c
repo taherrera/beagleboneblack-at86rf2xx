@@ -25,9 +25,8 @@ int main(void)
 		printf("Error: init pin\n");
 		return 0;
 	}
-	printf("%d",gpio_read((gpio_t) GPIO)));
-	
-	
+	printf("Reading from pin %d: %d\n",GPIO,gpio_read((gpio_t) GPIO));
+
 	return 0;
 
 
