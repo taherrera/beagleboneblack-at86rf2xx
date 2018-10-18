@@ -94,7 +94,7 @@ int gpio_init(gpio_t pin, gpio_mode_t mode)
 	
 }
 
-void gpio_write(gpio_t pin, int value)
+static bool _check(pin)
 {
 	bool defined = 0;;
 	/* check if pin is defined */
@@ -113,8 +113,15 @@ void gpio_write(gpio_t pin, int value)
 		printf("Warning: defined_pins_counter = %d", defined_pins_counter);
 		for (i=0;i<defined_pins_counter;i++)
 			printf("Warning: defined pins are: %d \n",defined_pins[i]);
-		return;
+		return defined;
 	}
+	return defined;
+}
+
+void gpio_write(gpio_t pin, int value)
+{
+	if (_check(pin))
+		return 1;
 
 	char gpio_file_path[30];
 	sprintf(gpio_file_path,"/sys/class/gpio/gpio%d/value",pin);

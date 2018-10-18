@@ -79,5 +79,16 @@ int gpio_init(gpio_t pin, gpio_mode_t mode);
 
 void gpio_write(gpio_t pin, int value);
 
+/**
+ * @brief   Get the current value of the given pin
+ *
+ * @param[in] pin       the pin to read
+ *
+ * @return              0 when pin is LOW
+ * @return              >0 for HIGH
+ */
+
+int gpio_read(gpio_t pin);
+
 #endif /* PERIPH_GPIO_H */
 /** @} */
