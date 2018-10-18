@@ -143,8 +143,7 @@ void gpio_write(gpio_t pin, int value)
 
 int gpio_read(gpio_t pin)
 {
-	if (_check(pin))
-		return;
+	_check(pin);
 
 	char gpio_file_path[30];
 	sprintf(gpio_file_path,"/sys/class/gpio/gpio%d/value",pin);
@@ -157,11 +156,8 @@ int gpio_read(gpio_t pin)
 		return;
 	}
 	
-	#ifdef DEBUG
-	printf("gpio_write: Writing %d to file %p \n",value, gpio_file_path);
-	#endif
-	
-	int c = fgetc(fptr);
+	char ch;
+	ch = fgetc(fptr);
 	fclose(fptr);
-	return c;
+	return ch-'0';
 }
