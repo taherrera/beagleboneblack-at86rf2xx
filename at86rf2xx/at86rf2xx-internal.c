@@ -56,7 +56,7 @@ void sram_read(const uint8_t offset, uint8_t *inbuff, const size_t len)
 
     uint8_t readCommand = AT86RF2XX_ACCESS_SRAM | AT86RF2XX_ACCESS_READ;
     //gpio_write(cs_pin, 0);
-    uint8_t outbuff[len+2] = {readCommand,offset};
+    uint8_t outbuff[256] = {readCommand,offset};
     //spi_transfer_byte(readCommand);
     //spi_transfer_byte((uint8_t) offset);
     int b;
@@ -70,7 +70,7 @@ void sram_read(const uint8_t offset, uint8_t *inbuff, const size_t len)
 void sram_write(const uint8_t offset, const uint8_t *data, const size_t len)
 {
     uint8_t writeCommand = AT86RF2XX_ACCESS_SRAM | AT86RF2XX_ACCESS_WRITE;
-    uint8_t outbuff[len+2] = {readCommand,offset};
+    uint8_t outbuff[256] = {writeCommand,offset};
     //gpio_write(cs_pin, 0);
     int b;
     for (b=0; b<len; b++) {
@@ -85,8 +85,9 @@ void fb_read(uint8_t *inbuff, const size_t len)
 {
     uint8_t readCommand = AT86RF2XX_ACCESS_FB | AT86RF2XX_ACCESS_READ;
     //gpio_write(cs_pin, 0);
-    char outbuff[len+1] = {readCommand};
-    for (int b=0; b<len; b++) {
+    char outbuff[256] = {readCommand};
+    int b;
+    for (b=0; b<len; b++) {
       outbuff[b+1] = 0x00;
     }
     spi_transfer_bytes(SPI_BUS, SPI_CS, CONT, (void*) outbuff, (void*) inbuff, len+1);

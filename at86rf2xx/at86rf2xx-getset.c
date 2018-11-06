@@ -22,6 +22,9 @@
  */
 
 #include "at86rf2xx.h"
+#include "../periph/periph_conf.h"
+#include "../periph/gpio.h"
+#include "../periph/spi.h"
 
 #ifdef MODULE_AT86RF212B
 /* See: Table 9-15. Recommended Mapping of TX Power, Frequency Band, and
@@ -90,7 +93,8 @@ uint64_t get_addr_long()
 {
     uint64_t addr;
     uint8_t *ap = (uint8_t *)(&addr);
-    for (int i = 0; i < 8; i++) {
+    int i;
+    for (i = 0; i < 8; i++) {
         ap[i] = addr_long[7 - i];
     }
     return addr;
@@ -98,7 +102,8 @@ uint64_t get_addr_long()
 
 void set_addr_long(uint64_t addr)
 {
-    for (int i = 0; i < 8; i++) {
+    int i;
+    for (i = 0; i < 8; i++) {
         addr_long[i] = (addr >> ((7 - i) * 8));
         reg_write((AT86RF2XX_REG__IEEE_ADDR_0 + i), addr_long[i]);
     }
@@ -176,7 +181,7 @@ void set_pan(uint16_t pan_)
 {
     pan = pan_;
     //DEBUG("pan0: %u, pan1: %u\n", (uint8_t)pan, pan >> 8);
-    reg_write(AT86RF2XX_REG__PAN_ID_0, (uint8_t)pan);
+    reg_write(AT86RF2XX_REG__PAN_ID_0, (uint8_t) pan);
     reg_write(AT86RF2XX_REG__PAN_ID_1, (pan >> 8));
 }
 
@@ -420,7 +425,7 @@ void set_state(uint8_t state_)
         /* Discard all IRQ flags, framebuffer is lost anyway */
         reg_read(AT86RF2XX_REG__IRQ_STATUS);
         /* Go to SLEEP mode from TRX_OFF */
-        digitalWrite(sleep_pin, HIGH);
+	gpio_write(SLP_TR_GPIO, 1);
         state = state_;
     } else {
         _set_state(state_);
