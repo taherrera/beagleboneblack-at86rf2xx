@@ -116,7 +116,7 @@ int init(int cs_pin_, int int_pin_, int sleep_pin_, int reset_pin_)
 	/* make sure device is not sleeping, so we can query part number */
 	assert_awake();
 	#ifdef DEBUG
-	printf("[at86rf2xx.c] Asstert awake OK.\n");
+	printf("[at86rf2xx.c] Assert awake OK.\n");
 	#endif
 	/* test if the SPI is set up correctly and the device is responding */
 	uint8_t part_num = reg_read(AT86RF2XX_REG__PART_NUM);

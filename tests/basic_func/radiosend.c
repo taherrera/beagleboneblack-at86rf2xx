@@ -17,10 +17,7 @@ int main() {
 	init(CSGPIO, INTGPIO, SLEEPGPIO, RESETGPIO);
 	//spi_acquire(SPI_BUS, SPI_CS, CLOCKMODE, SPI_FREQ);
 
-	//reg_read(AT86RF2XX_REG__PHY_TX_PWR); /* Segmentation Fault */
-	//printf("TX_PWR: %d\n",get_txpower());
-	//printf("Channel: %d\n", get_chan());
-	//printf("Long Addr: %d, Short Addr: %d\n", get_addr_long(), get_addr_short());
+	
 
 	return 1;
 }

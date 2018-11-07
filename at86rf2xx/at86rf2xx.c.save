@@ -1,0 +1,297 @@
+/*
+ * Copyright (C) 2013 Alaeddine Weslati <alaeddine.weslati@inria.fr>
+ * Copyright (C) 2015 Freie Universität Berlin
+ *
+ * This file is subject to the terms and conditions of the GNU Lesser
+ * General Public License v2.1. See the file LICENSE in the top level
+ * directory for more details.
+ */
+
+/**
+ * @ingroup     drivers_at86rf2xx
+ * @{
+ *
+ * @file
+ * @brief       Implementation of public functions for AT86RF2xx drivers
+ *
+ * @author      Alaeddine Weslati <alaeddine.weslati@inria.fr>
+ * @author      Thomas Eichinger <thomas.eichinger@fu-berlin.de>
+ * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
+ * @author      Kaspar Schleiser <kaspar@schleiser.de>
+ * @author      Oliver Hahm <oliver.hahm@inria.fr>
+ * @author      Mark Solters <msolters@gmail.com>
+ * @author      Tomás Herrera <taherrera@uc.cl> 
+ * 
+ * @}
+ */
+
+#include <stdio.h>
+#include <time.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include "../periph/gpio.h"
+#include "../periph/spi.h"
+#include "../periph/periph_cpu.h"
+
+#include "at86rf2xx.h"
+
+
+//#ifdef MODULE_AT86RF212B
+//    at86rf2xx_freq_t freq;              /**< currently used frequency */
+//#endif
+
+
+
+
+//static int cs_pin;                         /**< chip select pin */
+//static int sleep_pin;                      /**< sleep pin */
+int reset_pin;                      /**< reset pin */
+int int_pin;                        /**< external interrupt pin */
+uint8_t state;                      /**< current state of the radio */
+uint8_t seq_nr;                     /**< sequence number to use next */
+uint8_t frame_len;                  /**< length of the current TX frame */
+uint16_t pan;                       /**< currently used PAN ID */
+uint8_t chan;                       /**< currently used channel */
+
+
+/**
+ * @brief   Increments events count by  1.
+ */
+/*
+static void at86rf2xx_irq_handler(void)
+{
+    events++;
+    return;
+}
+*/
+
+int init(int cs_pin_, int int_pin_, int sleep_pin_, int reset_pin_)
+{
+	#ifdef DEBUG
+	printf("[at86rf2xx.c] Booting radio device.\n");
+	#endif
+
+	/* initialize device descriptor */
+	(void) cs_pin_;
+	int_pin = int_pin_;
+	//sleep_pin = sleep_pin_;
+	reset_pin = reset_pin_;
+	printf("[at86rf2xx.c] init: Reset pin = %d\n", reset_pin);
+	idle_state = AT86RF2XX_STATE_TRX_OFF;
+	state = AT86RF2XX_STATE_SLEEP;
+
+	/* setup GPIOs | BUG not more than 3 working */
+	gpio_init(reset_pin, (gpio_mode_t) GPIO_OUT);
+	//gpio_init(sleep_pin, (gpio_mode_t) GPIO_OUT);
+	gpio_init(int_pin, (gpio_mode_t) GPIO_IN);
+	sleep(1);
+	#ifdef DEBUG
+	printf("[at86rf2xx.c] GPIO OK.\n");
+	#endif
+	//gpio_init(cs_pin, (gpio_mode_t) GPIO_OUT); automatically set by spi
+
+	/* initialise SPI */
+	//  Set up SPI
+	spi_init(SPI_BUS);
+	int res_spi = spi_acquire(SPI_BUS, SPI_CS, CLOCKMODE, SPI_FREQ);
+
+	if (res_spi != 0)
+		printf("[at86rf2xx.c] ERROR INIT SPI\n");
+	#ifdef DEBUG
+	else
+		printf("[at86rf2xx.c] SPI OK.\n");
+	#endif
+	/*  wait for SPI to be ready  */
+	sleep(1);
+
+	/*  set GPIOs */
+	//gpio_write(sleep_pin, 0);
+	gpio_write(reset_pin, 1);
+	#ifdef DEBUG
+	printf("[at86rf2xx.c] GPIO write OK.\n");
+	#endif
+	/* TODO: atachInterrupt */
+	//attachInterrupt(digitalPinToInterrupt(int_pin), at86rf2xx_irq_handler, RISING);
+
+	/* make sure device is not sleeping, so we can query part number */
+	assert_awake();
+	#ifdef DEBUG
+	printf("[at86rf2xx.c] Assert awake OK.\n");
+	#endif
+	/* test if the SPI is set up correctly and the device is responding */
+	uint8_t part_num = reg_read(AT86RF2XX_REG__PART_NUM);
+	if (part_num != AT86RF233_PARTNUM) {
+		printf("[at86rf2xx.c] Error: unable to read correct part number: %d\n", part_num);
+		return -1;
+	}
+	printf("[at86rf2xx] Detected part #: %d\n",part_num);
+	printf("[at86rf2xx] Version: %d\n",reg_read(AT86RF2XX_REG__VERSION_NUM));
+
+	/* reset device to default values and put it into RX state */
+	reset();
+
+	return 0;
+}
+
+void reset(void)
+{
+    hardware_reset();
+
+    /* Reset state machine to ensure a known state */
+    reset_state_machine();
+
+    /* reset options and sequence number */
+    seq_nr = 0;
+    options = 0;
+
+    /* set short and long address */
+    set_addr_long(AT86RF2XX_DEFAULT_ADDR_LONG);
+    set/*
+ * Copyright (C) 2013 Alaeddine Weslati <alaeddine.weslati@inria.fr>
+ * Copyright (C) 2015 Freie Universität Berlin
+ *
+ * This file is subject to the terms and conditions of the GNU Lesser
+ * General Public License v2.1. See the file LICENSE in the top level
+ * directory for more details.
+ */
+
+/**
+ * @ingroup     drivers_at86rf2xx
+ * @{
+ *
+ * @file
+ * @brief       Implementation of public functions for AT86RF2xx drivers
+ *
+ * @author      Alaeddine Weslati <alaeddine.weslati@inria.fr>
+ * @author      Thomas Eichinger <thomas.eichinger@fu-berlin.de>
+ * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
+ * @author      Kaspar Schleiser <kaspar@schleiser.de>
+ * @author      Oliver Hahm <oliver.hahm@inria.fr>
+ * @author      Mark Solters <msolters@gmail.com>
+ * @author      Tomás Herrera <taherrera@uc.cl> 
+ * 
+ * @}
+ */
+
+#include <stdio.h>
+#include <time.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include "../periph/gpio.h"
+#include "../periph/spi.h"
+#include "../periph/periph_cpu.h"
+
+#include "at86rf2xx.h"
+
+
+//#ifdef MODULE_AT86RF212B
+//    at86rf2xx_freq_t freq;              /**< currently used frequency */
+//#endif
+
+
+
+
+//static int cs_pin;                         /**< chip select pin */
+//static int sleep_pin;                      /**< sleep pin */
+int reset_pin;                      /**< reset pin */
+int int_pin;                        /**< external interrupt pin */
+uint8_t state;                      /**< current state of the radio */
+uint8_t seq_nr;                     /**< sequence number to use next */
+uint8_t frame_len;                  /**< length of the current TX frame */
+uint16_t pan;                       /**< currently used PAN ID */
+uint8_t chan;                       /**< currently used channel */
+
+
+/**
+ * @brief   Increments events count by  1.
+ */
+/*
+static void at86rf2xx_irq_handler(void)
+{
+    events++;
+    return;
+}
+*/
+
+int init(int cs_pin_, int int_pin_, int sleep_pin_, int reset_pin_)
+{
+	#ifdef DEBUG
+	printf("[at86rf2xx.c] Booting radio device.\n");
+	#endif
+
+	/* initialize device descriptor */
+	(void) cs_pin_;
+	int_pin = int_pin_;
+	//sleep_pin = sleep_pin_;
+	reset_pin = reset_pin_;
+	printf("[at86rf2xx.c] init: Reset pin = %d\n", reset_pin);
+	idle_state = AT86RF2XX_STATE_TRX_OFF;
+	state = AT86RF2XX_STATE_SLEEP;
+
+	/* setup GPIOs | BUG not more than 3 working */
+	gpio_init(reset_pin, (gpio_mode_t) GPIO_OUT);
+	//gpio_init(sleep_pin, (gpio_mode_t) GPIO_OUT);
+	gpio_init(int_pin, (gpio_mode_t) GPIO_IN);
+	sleep(1);
+	#ifdef DEBUG
+	printf("[at86rf2xx.c] GPIO OK.\n");
+	#endif
+	//gpio_init(cs_pin, (gpio_mode_t) GPIO_OUT); automatically set by spi
+
+	/* initialise SPI */
+	//  Set up SPI
+	spi_init(SPI_BUS);
+	int res_spi = spi_acquire(SPI_BUS, SPI_CS, CLOCKMODE, SPI_FREQ);
+
+	if (res_spi != 0)
+		printf("[at86rf2xx.c] ERROR INIT SPI\n");
+	#ifdef DEBUG
+	else
+		printf("[at86rf2xx.c] SPI OK.\n");
+	#endif
+	/*  wait for SPI to be ready  */
+	sleep(1);
+
+	/*  set GPIOs */
+	//gpio_write(sleep_pin, 0);
+	gpio_write(reset_pin, 1);
+	#ifdef DEBUG
+	printf("[at86rf2xx.c] GPIO write OK.\n");
+	#endif
+	/* TODO: atachInterrupt */
+	//attachInterrupt(digitalPinToInterrupt(int_pin), at86rf2xx_irq_handler, RISING);
+
+	/* make sure device is not sleeping, so we can query part number */
+	assert_awake();
+	#ifdef DEBUG
+	printf("[at86rf2xx.c] Assert awake OK.\n");
+	#endif
+	/* test if the SPI is set up correctly and the device is responding */
+	uint8_t part_num = reg_read(AT86RF2XX_REG__PART_NUM);
+	if (part_num != AT86RF233_PARTNUM) {
+		printf("[at86rf2xx.c] Error: unable to read correct part number: %d\n", part_num);
+		return -1;
+	}
+	printf("[at86rf2xx] Detected part #: %d\n",part_num);
+	printf("[at86rf2xx] Version: %d\n",reg_read(AT86RF2XX_REG__VERSION_NUM));
+
+	/* reset device to default values and put it into RX state */
+	reset();
+
+	return 0;
+}
+
+void reset(void)
+{
+    hardware_reset();
+
+    /* Reset state machine to ensure a known state */
+    reset_state_machine();
+
+    /* reset options and sequence number */
+    seq_nr = 0;
+    options = 0;
+
+    /* set short and long address */
+    set_addr_long(AT86RF2XX_DEFAULT_ADDR_LONG);
+    set
