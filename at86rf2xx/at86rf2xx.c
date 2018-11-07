@@ -20,7 +20,7 @@
  * @author      Kaspar Schleiser <kaspar@schleiser.de>
  * @author      Oliver Hahm <oliver.hahm@inria.fr>
  * @author      Mark Solters <msolters@gmail.com>
- * @author      Tomás Herrera <taherrera@uc.cl>
+ * @author      Tomás Herrera <taherrera@uc.cl> 
  * 
  * @}
  */

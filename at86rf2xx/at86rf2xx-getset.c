@@ -17,6 +17,7 @@
  * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
  * @author      Baptiste Clenet <bapclenet@gmail.com>
  * @author      Daniel Krebs <github@daniel-krebs.net>
+ * @athor       Tomás Herrera <taherrera@uc.cl>
  *
  * @}
  */

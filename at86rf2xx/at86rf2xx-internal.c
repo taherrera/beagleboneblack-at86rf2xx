@@ -19,7 +19,7 @@
  * @author      Joakim Nohlgård <joakim.nohlgard@eistec.se>
  * @author      Hauke Petersen <hauke.petersen@fu-berlin.de>
  * @author      Mark Solters <msolters@gmail.com>
- * @author      Tomás Herrera <taherrera@uc.cl>
+ * @author      Tomás Herrera <taherrera@uc.cl> 
  *
  * @}
  */
