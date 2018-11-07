@@ -26,8 +26,11 @@
 
 #include "../periph/spi.h"
 #include "../periph/gpio.h"
-
+#include <unistd.h>
+#include <stdio.h>
 #include "at86rf2xx.h"
+
+
 
 void reg_write(const uint8_t addr, const uint8_t value)
 {
@@ -116,7 +119,7 @@ void assert_awake(void)
     printf("[at86rf2xx-internal.c] Asserting Awake\n");
     #endif
     if(get_status() == AT86RF2XX_STATE_SLEEP) {
-	printf("[at86rf2xx-internal.c] Device was Sleep\n");
+	printf("[at86rf2xx-internal.c] Device was Asleep\n");
         /* wake up and wait for transition to TRX_OFF */
         //gpio_write(sleep_pin, 0);
         usleep(AT86RF2XX_WAKEUP_DELAY);
@@ -135,7 +138,7 @@ void hardware_reset(void)
     assert_awake();
 
     /* trigger hardware reset */
-
+    printf("[at86rf2xx-internal.c] hardware_reset: reset_pin = %d\n", reset_pin);
     gpio_write(reset_pin, 0);
     usleep(AT86RF2XX_RESET_PULSE_WIDTH);
     gpio_write(reset_pin, 1);

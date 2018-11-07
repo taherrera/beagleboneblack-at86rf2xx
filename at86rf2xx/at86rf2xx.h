@@ -64,7 +64,7 @@ static uint8_t idle_state;                 /**< state to return to after sending
 
 //static int cs_pin;                         /**< chip select pin */
 //static int sleep_pin;                      /**< sleep pin */
-static int reset_pin;                      /**< reset pin */
+extern int reset_pin;                      /**< reset pin */
 static int int_pin;                        /**< external interrupt pin */
 static uint8_t state;                      /**< current state of the radio */
 static uint8_t seq_nr;                     /**< sequence number to use next */

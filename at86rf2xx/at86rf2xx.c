@@ -62,6 +62,7 @@ int init(int cs_pin_, int int_pin_, int sleep_pin_, int reset_pin_)
 	int_pin = int_pin_;
 	//sleep_pin = sleep_pin_;
 	reset_pin = reset_pin_;
+	printf("[at86rf2xx.c] init: Reset pin = %d", reset_pin);
 	idle_state = AT86RF2XX_STATE_TRX_OFF;
 	state = AT86RF2XX_STATE_SLEEP;
 
