@@ -118,7 +118,7 @@ void assert_awake(void)
     if(get_status() == AT86RF2XX_STATE_SLEEP) {
 	printf("[at86rf2xx-internal.c] Device was Sleep\n");
         /* wake up and wait for transition to TRX_OFF */
-        gpio_write(sleep_pin, 0);
+        //gpio_write(sleep_pin, 0);
         usleep(AT86RF2XX_WAKEUP_DELAY);
 
         /* update state */

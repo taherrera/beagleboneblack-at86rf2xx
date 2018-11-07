@@ -60,7 +60,7 @@ int init(int cs_pin_, int int_pin_, int sleep_pin_, int reset_pin_)
 	/* initialize device descriptor */
 	(void) cs_pin_;
 	int_pin = int_pin_;
-	sleep_pin = sleep_pin_;
+	//sleep_pin = sleep_pin_;
 	reset_pin = reset_pin_;
 	idle_state = AT86RF2XX_STATE_TRX_OFF;
 	state = AT86RF2XX_STATE_SLEEP;
@@ -113,7 +113,7 @@ int init(int cs_pin_, int int_pin_, int sleep_pin_, int reset_pin_)
 	printf("[at86rf2xx] Version: %d\n",reg_read(AT86RF2XX_REG__VERSION_NUM));
 
 	/* reset device to default values and put it into RX state */
-	//reset();
+	reset();
 
 	return 0;
 }
