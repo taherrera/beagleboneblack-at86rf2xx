@@ -27,6 +27,7 @@
 
 #include <stdio.h>
 #include <time.h>
+#include <unistd.h>
 #include <stdlib.h>
 #include "../periph/gpio.h"
 #include "../periph/spi.h"
@@ -41,15 +42,28 @@
 
 
 
+
+//static int cs_pin;                         /**< chip select pin */
+//static int sleep_pin;                      /**< sleep pin */
+int reset_pin;                      /**< reset pin */
+int int_pin;                        /**< external interrupt pin */
+uint8_t state;                      /**< current state of the radio */
+uint8_t seq_nr;                     /**< sequence number to use next */
+uint8_t frame_len;                  /**< length of the current TX frame */
+uint16_t pan;                       /**< currently used PAN ID */
+uint8_t chan;                       /**< currently used channel */
+
+
 /**
  * @brief   Increments events count by  1.
  */
+/*
 static void at86rf2xx_irq_handler(void)
 {
     events++;
     return;
 }
-
+*/
 
 int init(int cs_pin_, int int_pin_, int sleep_pin_, int reset_pin_)
 {
@@ -82,7 +96,7 @@ int init(int cs_pin_, int int_pin_, int sleep_pin_, int reset_pin_)
 	int res_spi = spi_acquire(SPI_BUS, SPI_CS, CLOCKMODE, SPI_FREQ);
 
 	if (res_spi != 0)
-		error("[at86rf2xx.c] ERROR INIT SPI\n");
+		printf("[at86rf2xx.c] ERROR INIT SPI\n");
 	#ifdef DEBUG
 	else
 		printf("[at86rf2xx.c] SPI OK.\n");

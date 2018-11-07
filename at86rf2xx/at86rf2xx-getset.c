@@ -308,8 +308,7 @@ void set_option(uint16_t option, bool state)
         /* trigger option specific actions */
         switch (option) {
             case AT86RF2XX_OPT_CSMA:
-                //DEBUG("[at86rf2xx] opt: enabling CSMA mode" \
-                      "(4 retries, min BE: 3 max BE: 5)\n");
+                //DEBUG("[at86rf2xx] opt: enabling CSMA mode (4 retries, min BE: 3 max BE: 5)\n");
                 /* Initialize CSMA seed with hardware address */
                 set_csma_seed(addr_long);
                 set_csma_max_retries(4);

@@ -124,7 +124,7 @@ uint8_t spi_transfer_byte(spi_t bus, spi_cs_t cs, bool cont, uint8_t out)
         ret = ioctl(spidev_fd, SPI_IOC_MESSAGE(2), &tr);
 
         if (ret < 1){
-                printf(1,0,"[spi.c] can't send spi message");
+                printf("[spi.c] can't send spi message");
         }
 
 	return (uint8_t) inbuf;

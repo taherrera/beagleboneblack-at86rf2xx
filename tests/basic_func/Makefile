@@ -46,7 +46,7 @@ at86rf2xx.o: at86rf2xx.c $(RADIO_DEPS)
 	$(CC) -c -o $(ODIR)$@ $< $(CFLAGS)
 
 # $@ = target
-radiosend.o: radiosend.c $(ODIR)at86rf2xx.o 
+radiosend.o: radiosend.c at86rf2xx.o 
 	$(CC) -c -o $(ODIR)$@ $< $(CFLAGS)   
 
 send: $(OBJ)

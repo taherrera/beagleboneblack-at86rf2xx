@@ -14,6 +14,7 @@
 #include "gpio.h"
 #include <stdio.h>
 #include <stdbool.h>
+#include <error.h>
 #include <stdlib.h>
 
 
@@ -154,7 +155,7 @@ int gpio_read(gpio_t pin)
 	if (fptr == NULL)
 	{
 		printf("[gpio.c] Error: Reading gpio_file_path: %s \n", gpio_file_path);
-		return;
+		return 1;
 	}
 	
 	char ch;

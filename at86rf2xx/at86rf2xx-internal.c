@@ -28,9 +28,13 @@
 #include "../periph/gpio.h"
 #include <unistd.h>
 #include <stdio.h>
+#include <error.h>
 #include "at86rf2xx.h"
 
-
+uint8_t addr_short[2];              /**< the radio's short address */
+uint8_t addr_long[8];               /**< the radio's long address */
+uint16_t options;                   /**< state of used options */
+uint8_t idle_state;                 /**< state to return to after sending */
 
 void reg_write(const uint8_t addr, const uint8_t value)
 {

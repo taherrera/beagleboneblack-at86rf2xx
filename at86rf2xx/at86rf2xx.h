@@ -56,21 +56,21 @@
 
 volatile int events;                /**< # of pending interrupts from the radio */
 
-static uint8_t addr_short[2];              /**< the radio's short address */
-static uint8_t addr_long[8];               /**< the radio's long address */
-static uint16_t options;                   /**< state of used options */
-static uint8_t idle_state;                 /**< state to return to after sending */
+extern uint8_t addr_short[2];              /**< the radio's short address */
+extern uint8_t addr_long[8];               /**< the radio's long address */
+extern uint16_t options;                   /**< state of used options */
+extern uint8_t idle_state;                 /**< state to return to after sending */
 
 
 //static int cs_pin;                         /**< chip select pin */
 //static int sleep_pin;                      /**< sleep pin */
 extern int reset_pin;                      /**< reset pin */
-static int int_pin;                        /**< external interrupt pin */
-static uint8_t state;                      /**< current state of the radio */
-static uint8_t seq_nr;                     /**< sequence number to use next */
-static uint8_t frame_len;                  /**< length of the current TX frame */
-static uint16_t pan;                       /**< currently used PAN ID */
-static uint8_t chan;                       /**< currently used channel */
+extern int int_pin;                        /**< external interrupt pin */
+extern uint8_t state;                      /**< current state of the radio */
+extern uint8_t seq_nr;                     /**< sequence number to use next */
+extern uint8_t frame_len;                  /**< length of the current TX frame */
+extern uint16_t pan;                       /**< currently used PAN ID */
+extern uint8_t chan;                       /**< currently used channel */
 
 
 /**
