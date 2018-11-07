@@ -41,7 +41,7 @@ void reg_write(const uint8_t addr, const uint8_t value)
 
 uint8_t reg_read(const uint8_t addr)
 {
-    uint8_t inbuff[1];
+    uint8_t inbuff[2];
     uint8_t readCommand = addr | AT86RF2XX_ACCESS_REG | AT86RF2XX_ACCESS_READ;
     uint8_t outbuff[2] = {readCommand, 0x00};
     //gpio_write(cs_pin, 0);
