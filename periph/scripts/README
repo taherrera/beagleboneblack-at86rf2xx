@@ -1,0 +1,3 @@
+Run once bootstrap.sh then reboot.
+
+From now on, every time you reset the device you must run setup.sh

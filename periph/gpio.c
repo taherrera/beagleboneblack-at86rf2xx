@@ -31,11 +31,11 @@ int gpio_init(gpio_t pin, gpio_mode_t mode)
 		if (pin == defined_pins[i])
 		{
 			defined = 1;
-		} 
+		}
 	}
 	#ifdef DEBUG
-	printf("gpio_init: defined = %d \n", defined);
-	printf("gpio_init: defined_pins_counter = %d \n", defined_pins_counter);
+	printf("[gpio.c] gpio_init: defined = %d \n", defined);
+	printf("[gpio.c] gpio_init: defined_pins_counter = %d \n", defined_pins_counter);
 	#endif
 
 	/* Increase number of pins defined as gpio */
@@ -48,22 +48,22 @@ int gpio_init(gpio_t pin, gpio_mode_t mode)
 		fptr = fopen("/sys/class/gpio/export","w");
 		if (fptr == NULL)
 		{
-			printf("Error creating gpio file\n");
+			printf("[gpio.c] Error creating gpio file for GPIO %d\n", pin);
 			return 1;
 		}
 
 		#ifdef DEBUG
-		printf("gpio_init: Creating gpio %d using export fileptr: %s \n",pin, fptr);
+		printf("[gpio.c] gpio_init: Creating gpio %d using export fileptr: %s \n",pin, fptr);
 		#endif
 
 		/* Create gpio{$pin} file */
 		fprintf(fptr,"%d",pin);
 		fclose(fptr);
-		
+
 	}
 
 	#ifdef DEBUG
-	printf("gpio_init: defined_pins_counter = %d \n", defined_pins_counter);
+	printf("[gpio.c] gpio_init: defined_pins_counter = %d \n", defined_pins_counter);
 	#endif
 
 	char gpio_file_path[30];
@@ -72,7 +72,7 @@ int gpio_init(gpio_t pin, gpio_mode_t mode)
 	fptr = fopen(gpio_file_path,"w");
 	if (fptr == NULL)
 	{
-		printf("Error Reading gpio_file_path: %s \n",gpio_file_path);
+		printf("[gpio.c] Error Reading gpio_file_path: %s \n",gpio_file_path);
 		return 1;
 	}
 
@@ -84,7 +84,7 @@ int gpio_init(gpio_t pin, gpio_mode_t mode)
 	{
 		fprintf(fptr,"out");
 	}else{
-		printf("Error: GPIO mode %d not defined \n", mode);
+		printf("[gpio.c] Error: GPIO mode %d not defined \n", mode);
 		fclose(fptr);
 		return 1;
 	}
@@ -109,10 +109,11 @@ static bool _check(pin)
 
 	if (!defined)
 	{
-		printf("Error: gpio pin %d not defined \n",pin);
-		printf("Warning: defined_pins_counter = %d", defined_pins_counter);
+		printf("[gpio.c] Error: gpio pin %d not defined \n",pin);
+		printf("[gpio.c] Warning: number of defined pins = %d \n", defined_pins_counter);
+		printf("[gpio.c] Warning: defined pins are: \n");
 		for (i=0;i<defined_pins_counter;i++)
-			printf("Warning: defined pins are: %d \n",defined_pins[i]);
+			printf("[gpio.c] %d \n",defined_pins[i]);
 		return defined;
 	}
 	return defined;
@@ -129,12 +130,12 @@ void gpio_write(gpio_t pin, int value)
 	fptr = fopen(gpio_file_path,"w");
 	if (fptr == NULL)
 	{
-		printf("Error: Reading gpio_file_path: %s \n", gpio_file_path);
+		printf("[gpio.c] Error: Reading gpio_file_path: %s \n", gpio_file_path);
 		return;
 	}
-	
+
 	#ifdef DEBUG
-	printf("gpio_write: Writing %d to file %p \n",value, gpio_file_path);
+	printf("[gpio.c] gpio_write: Writing %d to file %p \n",value, gpio_file_path);
 	#endif
 	
 	fprintf(fptr,"%d",value);
@@ -152,7 +153,7 @@ int gpio_read(gpio_t pin)
 	fptr = fopen(gpio_file_path,"r");
 	if (fptr == NULL)
 	{
-		printf("Error: Reading gpio_file_path: %s \n", gpio_file_path);
+		printf("[gpio.c] Error: Reading gpio_file_path: %s \n", gpio_file_path);
 		return;
 	}
 	

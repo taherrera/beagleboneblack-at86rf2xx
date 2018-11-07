@@ -45,10 +45,14 @@ uint8_t reg_read(const uint8_t addr)
     uint8_t readCommand = addr | AT86RF2XX_ACCESS_REG | AT86RF2XX_ACCESS_READ;
     uint8_t outbuff[2] = {readCommand, 0x00};
     //gpio_write(cs_pin, 0);
-    printf("Transfering bytes\n");
+    #ifdef DEBUG
+    printf("[at86rf2xx-internal.c] Transfering bytes\n");
+    #endif 
     spi_transfer_bytes(SPI_BUS, SPI_CS, CONT, (void*) outbuff, (void*) inbuff, 2);
     //gpio_write(cs_pin, 1);
-    printf("Bytes transfered\n");
+    #ifdef DEBUG
+    printf("[at86rf2xx-internal.c] Bytes transfered\n");
+    #endif
     return (uint8_t) inbuff[0];
 }
 
@@ -100,24 +104,28 @@ uint8_t get_status(void)
     /* if sleeping immediately return state */
     if(state == AT86RF2XX_STATE_SLEEP)
         return state;
-    printf("Reading Register to get state\n");
+    #ifdef DEBUG
+    printf("[at86rf2xx-internal.c] Reading Register to get state\n");
+    #endif
     return reg_read(AT86RF2XX_REG__TRX_STATUS) & AT86RF2XX_TRX_STATUS_MASK__TRX_STATUS;
 }
 
 void assert_awake(void)
 {
-    printf("Asserting Awake\n");
+    #ifdef DEBUG
+    printf("[at86rf2xx-internal.c] Asserting Awake\n");
+    #endif
     if(get_status() == AT86RF2XX_STATE_SLEEP) {
-	printf("Device was Sleep");
+	printf("[at86rf2xx-internal.c] Device was Sleep\n");
         /* wake up and wait for transition to TRX_OFF */
         gpio_write(sleep_pin, 0);
         usleep(AT86RF2XX_WAKEUP_DELAY);
 
         /* update state */
-	printf("Updating State");
+	printf("[at86rf2xx-internal.c] Updating State\n");
         state = reg_read(AT86RF2XX_REG__TRX_STATUS) & AT86RF2XX_TRX_STATUS_MASK__TRX_STATUS;
     }else{
-	printf("Device was Awake");
+	printf("[at86rf2xx-internal.c] Device was Awake\n");
     }
 }
 

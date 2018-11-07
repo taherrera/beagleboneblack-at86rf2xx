@@ -16,7 +16,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-
+#include <error.h>
 #include <time.h>
 #include <getopt.h>
 #include <fcntl.h>
@@ -47,7 +47,9 @@ void spi_init(spi_t bus)
 	spidev_fd = open(buff,O_RDWR);
 	tr.delay_usecs = 0;
 	tr.bits_per_word = 8;
+	#ifdef DEBUG
 	printf("[spi.c] spidev_fd = %d\n",spidev_fd);
+	#endif
 	return;
 }
 
@@ -82,7 +84,7 @@ int spi_acquire(spi_t bus, spi_cs_t cs, spi_mode_t mode, spi_clk_t clk)
         { 
 		spi_mode = SPI_MODE_3;
         }else{
-		error("SPI mode %d not defined",spi_mode);
+		error(1,1,"[spi.c] SPI mode %d not defined\n",spi_mode);
 	}
 
 	/*
@@ -90,11 +92,11 @@ int spi_acquire(spi_t bus, spi_cs_t cs, spi_mode_t mode, spi_clk_t clk)
 	 */
 	ret = ioctl(spidev_fd , SPI_IOC_WR_MODE, &spi_mode);
 	if (ret == -1)
-		error("can't set spi mode");
+		printf("[spi.c] can't set spi mode\n");
 
 	ret = ioctl(spidev_fd , SPI_IOC_RD_MODE, &spi_mode);
 	if (ret == -1)
-		error("can't get spi mode");
+		printf("[spi.c] can't get spi mode\n");
 
 	tr.speed_hz = clk;
 	return 0;
@@ -122,7 +124,7 @@ uint8_t spi_transfer_byte(spi_t bus, spi_cs_t cs, bool cont, uint8_t out)
         ret = ioctl(spidev_fd, SPI_IOC_MESSAGE(2), &tr);
 
         if (ret < 1){
-                error("[spi.c] can't send spi message");
+                printf(1,0,"[spi.c] can't send spi message");
         }
 
 	return (uint8_t) inbuf;
@@ -141,19 +143,20 @@ void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont, const void *out, void
 	tr.rx_buf = (uint32_t) auxin;
 
 	tr.len = len;
-
+	#ifdef DEBUG
 	printf("[spi.c] Making Transfer with fd: %d, %d bits \n",spidev_fd,tr.bits_per_word);
-
+	#endif
 	/* Make a Transfer */
 	ret = ioctl(spidev_fd, SPI_IOC_MESSAGE(2), &tr);
 
 	if (ret < 1){
-		error("[spi.c] can't send spi message");
+		error(1,1,"[spi.c] can't send spi message");
 	}
-
+	#ifdef DEBUG
 	printf("[spi.c] Memmoving");
+	#endif
 	/* The first byte read is always 0, correct this */
 	memmove(in, auxin + 1,sizeof in - sizeof *in);
-	
+
 }
 

@@ -53,7 +53,9 @@ static void at86rf2xx_irq_handler(void)
 
 int init(int cs_pin_, int int_pin_, int sleep_pin_, int reset_pin_)
 {
+	#ifdef DEBUG
 	printf("[at86rf2xx.c] Booting radio device.\n");
+	#endif
 
 	/* initialize device descriptor */
 	(void) cs_pin_;
@@ -63,43 +65,44 @@ int init(int cs_pin_, int int_pin_, int sleep_pin_, int reset_pin_)
 	idle_state = AT86RF2XX_STATE_TRX_OFF;
 	state = AT86RF2XX_STATE_SLEEP;
 
-	/* setup GPIOs */
+	/* setup GPIOs | BUG not more than 3 working */
 	gpio_init(reset_pin, (gpio_mode_t) GPIO_OUT);
-	gpio_init(sleep_pin, (gpio_mode_t) GPIO_OUT);
+	//gpio_init(sleep_pin, (gpio_mode_t) GPIO_OUT);
 	gpio_init(int_pin, (gpio_mode_t) GPIO_IN);
-
+	sleep(1);
+	#ifdef DEBUG
 	printf("[at86rf2xx.c] GPIO OK.\n");
+	#endif
 	//gpio_init(cs_pin, (gpio_mode_t) GPIO_OUT); automatically set by spi
 
 	/* initialise SPI */
 	//  Set up SPI
 	spi_init(SPI_BUS);
 	int res_spi = spi_acquire(SPI_BUS, SPI_CS, CLOCKMODE, SPI_FREQ);
-	//  Data is transmitted and received MSB first
-	//SPI.setBitOrder(MSBFIRST);
-	//  SPI interface will run at 5MHZ
-	//SPI.setClockDivider((spi_clk_t) SPI_CLK_5MHZ);
-	//  Data is clocked on the rising edge and clock is low when inactive
-	//SPI.setDataMode((spi_mode_t) SPI_MODE_0);
+
 	if (res_spi != 0)
 		error("[at86rf2xx.c] ERROR INIT SPI\n");
+	#ifdef DEBUG
 	else
 		printf("[at86rf2xx.c] SPI OK.\n");
+	#endif
 	/*  wait for SPI to be ready  */
 	sleep(1);
 
-	/*  initialize GPIOs */
-	gpio_write(sleep_pin, 0);
+	/*  set GPIOs */
+	//gpio_write(sleep_pin, 0);
 	gpio_write(reset_pin, 1);
-	//gpio_write(cs_pin, 1);
+	#ifdef DEBUG
 	printf("[at86rf2xx.c] GPIO write OK.\n");
+	#endif
 	/* TODO: atachInterrupt */
 	//attachInterrupt(digitalPinToInterrupt(int_pin), at86rf2xx_irq_handler, RISING);
 
 	/* make sure device is not sleeping, so we can query part number */
 	assert_awake();
-
-	printf("[at86rf2xx.c] Asstert_awake OK.\n");
+	#ifdef DEBUG
+	printf("[at86rf2xx.c] Asstert awake OK.\n");
+	#endif
 	/* test if the SPI is set up correctly and the device is responding */
 	uint8_t part_num = reg_read(AT86RF2XX_REG__PART_NUM);
 	if (part_num != AT86RF233_PARTNUM) {
@@ -107,10 +110,10 @@ int init(int cs_pin_, int int_pin_, int sleep_pin_, int reset_pin_)
 		return -1;
 	}
 	printf("[at86rf2xx] Detected part #: %d\n",part_num);
-	printf("[at86rf2xx] Version: %d",reg_read(AT86RF2XX_REG__VERSION_NUM));
+	printf("[at86rf2xx] Version: %d\n",reg_read(AT86RF2XX_REG__VERSION_NUM));
 
 	/* reset device to default values and put it into RX state */
-	reset();
+	//reset();
 
 	return 0;
 }

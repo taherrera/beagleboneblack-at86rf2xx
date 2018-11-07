@@ -22,7 +22,7 @@ GPIO\_48 (15)   --- 9 IRQ/GPIO  | (24 IRQ)
 
 GPIO\_49 (23)   --- 10          | (11 SLP_TR)
 
-SPIO\_CSO (17)  --- 23 SPI_SS_A | (23 SEL)
+SPIO\_CSO (17)  --- 15 SPI_SS_A | (23 SEL)
 
 SPIO\_D1 (18)   --- 16 SPI_MOSI | (22 MOSI)
 
