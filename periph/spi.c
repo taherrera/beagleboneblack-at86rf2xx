@@ -46,7 +46,8 @@ void spi_init(spi_t bus)
 	sprintf(buff, device, bus);
 	spidev_fd = open(buff,O_RDWR);
 	tr.delay_usecs = 0;
-    tr.bits_per_word = 8;
+	tr.bits_per_word = 8;
+	printf("[spi.c] spidev_fd = %d\n",spidev_fd);
 	return;
 }
 
@@ -96,7 +97,8 @@ int spi_acquire(spi_t bus, spi_cs_t cs, spi_mode_t mode, spi_clk_t clk)
 		error("can't get spi mode");
 
 	tr.speed_hz = clk;
-	return 1;
+	return 0;
+
 
 }
 
@@ -120,7 +122,7 @@ uint8_t spi_transfer_byte(spi_t bus, spi_cs_t cs, bool cont, uint8_t out)
         ret = ioctl(spidev_fd, SPI_IOC_MESSAGE(2), &tr);
 
         if (ret < 1){
-                error("can't send spi message");
+                error("[spi.c] can't send spi message");
         }
 
 	return (uint8_t) inbuf;
@@ -140,13 +142,16 @@ void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont, const void *out, void
 
 	tr.len = len;
 
+	printf("[spi.c] Making Transfer with fd: %d, %d bits \n",spidev_fd,tr.bits_per_word);
+
 	/* Make a Transfer */
 	ret = ioctl(spidev_fd, SPI_IOC_MESSAGE(2), &tr);
 
 	if (ret < 1){
-		error("can't send spi message");
+		error("[spi.c] can't send spi message");
 	}
 
+	printf("[spi.c] Memmoving");
 	/* The first byte read is always 0, correct this */
 	memmove(in, auxin + 1,sizeof in - sizeof *in);
 	

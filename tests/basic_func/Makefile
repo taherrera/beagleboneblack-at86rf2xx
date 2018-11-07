@@ -47,10 +47,10 @@ at86rf2xx.o: at86rf2xx.c $(RADIO_DEPS)
 
 # $@ = target
 radiosend.o: radiosend.c $(ODIR)at86rf2xx.o 
-	$(CC) -c -o $(ODIR)$@ $< $(ODIR)at86rf2xx.o $(CFLAGS)   
+	$(CC) -c -o $(ODIR)$@ $< $(CFLAGS)   
 
 send: $(OBJ)
-	$(CC) -o $@ $(ODIR)radiosend.o $(RADIO_OBJS) $(ODIR)spi.o $(ODIR)gpio.o $(CFLAGS)
+	$(CC) -o $@ $(ODIR)radiosend.o $(ODIR)at86rf2xx.o $(RADIO_OBJS) $(ODIR)spi.o $(ODIR)gpio.o $(CFLAGS)
 
 $(OBJ): | mkdir
 

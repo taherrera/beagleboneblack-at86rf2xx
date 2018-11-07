@@ -34,8 +34,6 @@
 
 #include "at86rf2xx.h"
 
-#define BUS 1
-
 
 //#ifdef MODULE_AT86RF212B
 //    at86rf2xx_freq_t freq;              /**< currently used frequency */
@@ -55,10 +53,10 @@ static void at86rf2xx_irq_handler(void)
 
 int init(int cs_pin_, int int_pin_, int sleep_pin_, int reset_pin_)
 {
-	printf("[at86rf2xx] Booting radio device.\n");
+	printf("[at86rf2xx.c] Booting radio device.\n");
 
 	/* initialize device descriptor */
-	cs_pin = cs_pin_;
+	(void) cs_pin_;
 	int_pin = int_pin_;
 	sleep_pin = sleep_pin_;
 	reset_pin = reset_pin_;
@@ -69,33 +67,39 @@ int init(int cs_pin_, int int_pin_, int sleep_pin_, int reset_pin_)
 	gpio_init(reset_pin, (gpio_mode_t) GPIO_OUT);
 	gpio_init(sleep_pin, (gpio_mode_t) GPIO_OUT);
 	gpio_init(int_pin, (gpio_mode_t) GPIO_IN);
-	
+
+	printf("[at86rf2xx.c] GPIO OK.\n");
 	//gpio_init(cs_pin, (gpio_mode_t) GPIO_OUT); automatically set by spi
 
 	/* initialise SPI */
 	//  Set up SPI
-	spi_init((spi_t) BUS);
+	spi_init(SPI_BUS);
+	int res_spi = spi_acquire(SPI_BUS, SPI_CS, CLOCKMODE, SPI_FREQ);
 	//  Data is transmitted and received MSB first
 	//SPI.setBitOrder(MSBFIRST);
 	//  SPI interface will run at 5MHZ
 	//SPI.setClockDivider((spi_clk_t) SPI_CLK_5MHZ);
 	//  Data is clocked on the rising edge and clock is low when inactive
 	//SPI.setDataMode((spi_mode_t) SPI_MODE_0);
-
+	if (res_spi != 0)
+		error("[at86rf2xx.c] ERROR INIT SPI\n");
+	else
+		printf("[at86rf2xx.c] SPI OK.\n");
 	/*  wait for SPI to be ready  */
-	delay(10);
+	sleep(1);
 
 	/*  initialize GPIOs */
 	gpio_write(sleep_pin, 0);
 	gpio_write(reset_pin, 1);
-	gpio_write(cs_pin, 1);
-
+	//gpio_write(cs_pin, 1);
+	printf("[at86rf2xx.c] GPIO write OK.\n");
 	/* TODO: atachInterrupt */
 	//attachInterrupt(digitalPinToInterrupt(int_pin), at86rf2xx_irq_handler, RISING);
 
 	/* make sure device is not sleeping, so we can query part number */
 	assert_awake();
 
+	printf("[at86rf2xx.c] Asstert_awake OK.\n");
 	/* test if the SPI is set up correctly and the device is responding */
 	uint8_t part_num = reg_read(AT86RF2XX_REG__PART_NUM);
 	if (part_num != AT86RF233_PARTNUM) {
