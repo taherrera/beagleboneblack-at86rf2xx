@@ -46,7 +46,7 @@
 /**
  * @brief   Increments events count by  1.
  */
-static void at86rf2xx_irq_handler()
+static void at86rf2xx_irq_handler(void)
 {
     events++;
     return;
@@ -111,7 +111,7 @@ int init(int cs_pin_, int int_pin_, int sleep_pin_, int reset_pin_)
 	return 0;
 }
 
-void reset()
+void reset(void)
 {
     hardware_reset();
 
@@ -173,7 +173,7 @@ void reset()
     printf("[at86rf2xx] Reset complete.\n");
 }
 
-bool cca()
+bool cca(void)
 {
     uint8_t tmp;
     uint8_t status;
@@ -212,7 +212,7 @@ size_t send(uint8_t *data, size_t len)
     return len;
 }
 
-void tx_prepare()
+void tx_prepare(void)
 {
     uint8_t state;
 
@@ -241,7 +241,7 @@ size_t tx_load(uint8_t *data,
     return offset + len;
 }
 
-void tx_exec()
+void tx_exec(void)
 {
     /* write frame length field in FIFO */
     sram_write(0, &(frame_len), 1);
@@ -252,7 +252,7 @@ void tx_exec()
     }*/
 }
 
-size_t rx_len()
+size_t rx_len(void)
 {
     uint8_t phr;
     fb_read(&phr, 1);

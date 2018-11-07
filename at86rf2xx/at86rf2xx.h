@@ -89,14 +89,14 @@ int init(int cs_pin, int int_pin, int sleep_pin, int reset_pin);
 /**
  * @brief   Trigger a hardware reset and configure radio with default values
  */
-void reset();
+void reset(void);
 
 /**
  * @brief   Get the short address of the given device
  *
  * @return                  the currently set (2-byte) short address
  */
-uint16_t get_addr_short();
+uint16_t get_addr_short(void);
 
 /**
  * @brief   Set the short address of the given device
@@ -110,7 +110,7 @@ void set_addr_short(uint16_t addr);
  *
  * @return                  the currently set (8-byte) long address
  */
-uint64_t get_addr_long();
+uint64_t get_addr_long(void);
 
 /**
  * @brief   Set the long address of the given device
@@ -124,7 +124,7 @@ void set_addr_long(uint64_t addr);
  *
  * @return                  the currently set channel
  */
-uint8_t get_chan();
+uint8_t get_chan(void);
 
 /**
  * @brief   Set the channel of the given device
@@ -153,7 +153,7 @@ void set_chan(uint8_t chan);
  *
  * @return                  the currently set PAN ID
  */
-uint16_t get_pan();
+uint16_t get_pan(void);
 
 /**
  * @brief   Set the PAN ID of the given device
@@ -186,7 +186,7 @@ void set_txpower(int16_t txpower);
  *
  * @return                  configured number of retransmissions
  */
-uint8_t get_max_retries();
+uint8_t get_max_retries(void);
 
 /**
  * @brief   Set the maximum number of retransmissions
@@ -204,7 +204,7 @@ void set_max_retries(uint8_t max);
  *
  * @return                  configured number of retries
  */
-uint8_t get_csma_max_retries();
+uint8_t get_csma_max_retries(void);
 
 /**
  * @brief   Set the maximum number of channel access attempts per frame (CSMA)
@@ -260,7 +260,7 @@ void set_state(uint8_t state);
  * a known state during driver initialization.
  *
  */
-void reset_state_machine();
+void reset_state_machine(void);
 
 /**
  * @brief   Convenience function for simply sending data
@@ -282,7 +282,7 @@ size_t send(uint8_t *data, size_t len);
  * data is possible after it was called.
  *
  */
-void tx_prepare();
+void tx_prepare(void);
 
 /**
  * @brief   Load chunks of data into the transmit buffer of the given device
@@ -299,14 +299,14 @@ size_t tx_load(uint8_t *data, size_t len, size_t offset);
  * @brief   Trigger sending of data previously loaded into transmit buffer
  *
  */
-void tx_exec();
+void tx_exec(void);
 
 /**
  * @brief   Read the length of a received packet
  *
  * @return                  overall length of a received packet in byte
  */
-size_t rx_len();
+size_t rx_len(void);
 
 /**
  * @brief   Read a chunk of data from the receive buffer of the given device
@@ -367,26 +367,26 @@ void fb_read(uint8_t *data, const size_t len);
  * @brief   Cancel ongoing transactions and switch to TRX_OFF state
  *
  */
-void force_trx_off();
+void force_trx_off(void);
 
 /**
  * @brief   Convenience function for reading the status of the given device
  *
  * @return              internal status of the given device
  */
-uint8_t get_status();
+uint8_t get_status(void);
 
 /**
  * @brief   Make sure that device is not sleeping
  *
  */
-void assert_awake();
+void assert_awake(void);
 
 /**
  * @brief   Trigger a hardware reset
  *
  */
-void hardware_reset();
+void hardware_reset(void);
 
 
 /**
@@ -395,7 +395,7 @@ void hardware_reset();
  * @return                  true if channel is clear
  * @return                  false if channel is busy
  */
-bool cca();
+bool cca(void);
 
 
 /*  Declare at86rf2xx device  

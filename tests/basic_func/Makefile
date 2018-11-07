@@ -20,6 +20,7 @@ RADIO_PATH=../../at86rf2xx
 # search path of target if file not in current path (.)
 VPATH = $(GPIO_PATH):$(SPI_PATH):$(RADIO_PATH)
 
+RADIO_FILES= $(RADIO_PATH)/at86rf2xx-getset.c $(RADIO_PATH)/at86rf2xx-internal.c
 RADIO_DEPS = at86rf2xx-getset.o at86rf2xx-internal.o
 RADIO_OBJS = $(ODIR)at86rf2xx-getset.o $(ODIR)at86rf2xx-internal.o
 
@@ -42,14 +43,14 @@ spi.o: spi.c
 # $< first requisite of for this target
 
 at86rf2xx.o: at86rf2xx.c $(RADIO_DEPS)
-	$(CC) -c -o $(ODIR)$@ $< $(RADIO_OBJS) $(CFLAGS)
+	$(CC) -c -o $(ODIR)$@ $< $(CFLAGS)
 
 # $@ = target
-radiosend.o: radiosend.c at86rf2xx.o 
+radiosend.o: radiosend.c $(ODIR)at86rf2xx.o 
 	$(CC) -c -o $(ODIR)$@ $< $(ODIR)at86rf2xx.o $(CFLAGS)   
 
 send: $(OBJ)
-	$(CC) -o $@ $(ODIR)radiosend.o $(CFLAGS)
+	$(CC) -o $@ $(ODIR)radiosend.o $(RADIO_OBJS) $(ODIR)spi.o $(ODIR)gpio.o $(CFLAGS)
 
 $(OBJ): | mkdir
 
@@ -62,6 +63,7 @@ mkdir:
 
 .PHONY : clean
 clean:
-	-rm send && rm -r $(ODIR)
+	-rm send
+	-rm -r $(ODIR)
 
 # $^ lists all prerequisites of the rule (where they where found)
