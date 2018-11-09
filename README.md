@@ -38,7 +38,13 @@ Pinout of the BBB can be found in lect/beaglebone-black-pinout.jpg
 
 ## Instalation
 
-**You must run periph/scripts/install.sh as superuser**. This will enable access to the SPI pins on the BBB via userspace. Note that it also adds a bootstrap script to your crontab to enable a spi device on /dev/spi*.
+**You must run periph/scripts/install.sh as superuser**. This will enable access to the SPI pins on the BBB via userspace. Note that it also adds a bootstrap script to your crontab to enable a spi device on /dev/spi*:
+
+```
+sudo su
+chmod a+x periph/scripts/install.sh
+./periph/scripts/install.sh
+```
 
 ## Driver Configuration
 
