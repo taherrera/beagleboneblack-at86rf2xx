@@ -48,10 +48,10 @@ int main() {
 	buf[0] = 0x21; /* Frame Control Field */
 	buf[1] = 0xc8; /* Frame Control Field */
 	buf[2] = 0x8b; /* Sequence number */
-	buf[3] = 0xff; /* Destination PAN ID 0xffff */
-	buf[4] = 0xff; /* Destination PAN ID */
-	buf[5] = 0x02; /* Destination short address 0x0002 */
-	buf[6] = 0x00; /* Destination short address */
+	buf[3] = 0x30; /* Destination PAN ID 0x0230 */
+	buf[4] = 0x02; /* Destination PAN ID */
+	buf[5] = 0x30; /* Destination short address 0x0230 */
+	buf[6] = 0x02; /* Destination short address */
 	buf[7] = 0x23; /* Source PAN ID 0x0023 */
 	buf[8] = 0x00; /* */
 	buf[9] = 0x60; /* Source extended address ae:c2:4a:1c:21:16:e2:60 */

@@ -32,7 +32,7 @@
 
 #define UENVDIR "/boot/uEnv.txt"
 #define ENABLESPI "capemgr.enable_partno=BB-SPI0-01"
-#define DEBUG
+//#define DEBUG
 
 static int spidev_fd;
 static char device[] = "/dev/spidev%d.0"; 
