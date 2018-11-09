@@ -28,7 +28,7 @@ SPIO\_SLCK (22) --- 18 SPI_SCK  | (19 SCLK)
 
 GND             --- 10          | (11 SLP_TR)
 
-TODO (experimental):
+TODO (__experimental__):
 
 GPIO\_48 (15)   --- 9 IRQ/GPIO  | (24 IRQ)
 
@@ -38,17 +38,17 @@ Pinout of the BBB can be found in lect/beaglebone-black-pinout.jpg
 
 ## Instalation
 
-You must run periph/scripts/install.sh as superuser. This will enable access to the SPI pins on the BBB via userspace. Note that it also adds a bootstrap script to your crontab to enable a spi device on /dev/spi*.
+**You must run periph/scripts/install.sh as superuser**. This will enable access to the SPI pins on the BBB via userspace. Note that it also adds a bootstrap script to your crontab to enable a spi device on /dev/spi*.
 
 ## Driver Configuration
 
 Without further configuration, this library will use the default AT86RF2xx parameters contained in `at86rf2xx-defaults.h`.  Most radio parameters can be updated manually by using the set/getters enumerated in `at86rf2xx-getset.c`.  For example, to change the radio channel to `25`, simply call `set_chan(25)` on the at86rf2xx device after initialization:
 
-```cpp
+```c
 	at86rf2xx.init(SEL_CS, IRQ_GPIO, SLP_TR_GPIO, RESET_PIN);
 	at86rf2xx.set_chan(CHANNEL); // set channel
 ```
 
-Important notes:
+###Important notes:
 
-SEL_CS is not configurable. You must use pin 17 on the BBB.
+**SEL_CS is not configurable**. You must use pin 17 on the BBB.
