@@ -12,7 +12,10 @@ fi
 BASEDIR=$(dirname $0)
 
 # Compile .dtbo for configuring pins
-
+sudo apt-get purge device-tree-compiler
+wget -c https://raw.githubusercontent.com/RobertCNelson/tools/master/pkgs/dtc.sh
+chmod +x dtc.sh
+./dtc.sh
 dtc -O dtb -o ${BASEDIR}/BB-SPI0-01-00A0.dtbo -b 0 -@ ${BASEDIR}/BB-SPI0-01-00A0.dts 
 
 cp ${BASEDIR}/BB-SPI0-01-00A0.dtbo /lib/firmware/
