@@ -29,8 +29,11 @@ echo capemgr.enable_partno=BB-SPI0-01 >> /boot/uEnv.txt
 #enable device tree overlay
 
 echo BB-SPI0-01 > /sys/devices/bone_capemgr.*/slots
+
+#should output spi devices
 ls -lh /dev/spi*
 
+chmod a+x ${BASEDIR}/bootstrap.sh
 
 # Absolute path to this script.
 SCRIPT=$(readlink -f "$0")
