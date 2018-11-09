@@ -192,7 +192,7 @@ void reset(void)
     /* go into RX state */
     set_state(AT86RF2XX_STATE_RX_AACK_ON);
 
-    printf("[at86rf2xx] Reset complete.\n");
+    printf("[at86rf2xx.c] Reset complete.\n");
 }
 
 bool cca(void)
@@ -225,7 +225,7 @@ size_t send(uint8_t *data, size_t len)
 {
     /* check data length */
     if (len > AT86RF2XX_MAX_PKT_LENGTH) {
-        printf("[at86rf2xx] Error: Data to send exceeds max packet size.\n");
+        printf("[at86rf2xx.c] Error: Data to send exceeds max packet size.\n");
         return 0;
     }
     tx_prepare();
