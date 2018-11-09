@@ -24,6 +24,8 @@ cp ${BASEDIR}/BB-SPI0-01-00A0.dtbo /lib/firmware/
 # Enable SPI0 on uEnv.txt
 echo \#\#Enable SPI0 >> /boot/uEnv.txt
 echo optargs=quiet drm.debug=7 >> /boot/uEnv.txt
+echo cape_disable=bone_capemgr.disable_partno=BB-BONELT-HDMI,BB-BONELT-HDMIN
+echo cape_enable=bone_capemgr.enable_partno=BB-SPI0-01
 echo capemgr.disable_partno=BB-BONELT-HDMI,BB-BONELT-HDMIN >> /boot/uEnv.txt
 echo capemgr.enable_partno=BB-SPI0-01 >> /boot/uEnv.txt
 

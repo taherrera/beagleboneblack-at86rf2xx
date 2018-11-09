@@ -32,6 +32,7 @@
 
 #define UENVDIR "/boot/uEnv.txt"
 #define ENABLESPI "capemgr.enable_partno=BB-SPI0-01"
+#define DEBUG
 
 static int spidev_fd;
 static char device[] = "/dev/spidev%d.0"; 
@@ -45,6 +46,8 @@ void spi_init(spi_t bus)
 	char buff[30];
 	sprintf(buff, device, bus);
 	spidev_fd = open(buff,O_RDWR);
+	if (spidev_fd < 0)
+		printf("[spi.c] Error opening spidev_fd !\n");
 	tr.delay_usecs = 0;
 	tr.bits_per_word = 8;
 	#ifdef DEBUG
@@ -147,13 +150,14 @@ void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont, const void *out, void
 	printf("[spi.c] Making Transfer with fd: %d, %d bits \n",spidev_fd,tr.bits_per_word);
 	#endif
 	/* Make a Transfer */
-	ret = ioctl(spidev_fd, SPI_IOC_MESSAGE(2), &tr);
+	ret = ioctl(spidev_fd, SPI_IOC_MESSAGE(3), &tr);
 
-	if (ret < 1){
-		error(1,1,"[spi.c] can't send spi message");
+	if (ret == 1){
+		error(1,1,"[spi.c] ERROR can't send spi message");
 	}
 	#ifdef DEBUG
-	printf("[spi.c] Memmoving");
+	printf("[spi.c] ret: %d\n", ret);
+	printf("[spi.c] Mem moving \n");
 	#endif
 	/* The first byte read is always 0, correct this */
 	memmove(in, auxin + 1,sizeof in - sizeof *in);
