@@ -49,6 +49,6 @@ Without further configuration, this library will use the default AT86RF2xx param
 	at86rf2xx.set_chan(CHANNEL); // set channel
 ```
 
-###Important notes:
+### Important notes:
 
 **SEL_CS is not configurable**. You must use pin 17 on the BBB.
