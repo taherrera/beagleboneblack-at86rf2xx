@@ -46,6 +46,23 @@ chmod a+x periph/scripts/install.sh
 ./periph/scripts/install.sh
 ```
 
+## Testing
+
+What could fail is SPI setup due to OS updates. To test run tests/coms/com_read
+
+If SPI is working the output should be:
+
+```
+Should be b (reset value), outputing: **b**
+```
+
+If not:
+```
+Should be b (reset value), outputing: **0**
+```
+
+
+
 ## Driver Configuration
 
 Without further configuration, this library will use the default AT86RF2xx parameters contained in `at86rf2xx-defaults.h`.  Most radio parameters can be updated manually by using the set/getters enumerated in `at86rf2xx-getset.c`.  For example, to change the radio channel to `25`, simply call `set_chan(25)` on the at86rf2xx device after initialization:

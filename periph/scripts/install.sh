@@ -21,6 +21,7 @@ cp ${BASEDIR}/BB-SPI0-01-00A0.dtbo /lib/firmware/
 # Enable SPI0 on uEnv.txt
 echo \#\#Enable SPI0 >> /boot/uEnv.txt
 echo optargs=quiet drm.debug=7 >> /boot/uEnv.txt
+echo capemgr.disable_partno=BB-BONELT-HDMI,BB-BONELT-HDMIN >> /boot/uEnv.txt
 echo capemgr.enable_partno=BB-SPI0-01 >> /boot/uEnv.txt
 
 # Reset the BBB ?
@@ -31,7 +32,7 @@ echo capemgr.enable_partno=BB-SPI0-01 >> /boot/uEnv.txt
 echo BB-SPI0-01 > /sys/devices/bone_capemgr.*/slots
 
 #should output spi devices
-ls -lh /dev/spi*
+ls -lh /dev/spi* | grep --color spidev1.0
 
 chmod a+x ${BASEDIR}/bootstrap.sh
 
