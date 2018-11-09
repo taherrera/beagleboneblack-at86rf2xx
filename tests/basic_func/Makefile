@@ -5,7 +5,7 @@ CC=gcc
 # Compiler Flags
 CFLAGS=-I. -Wall -Dcpp_variable=DEBUG
 
-OBJ = radiosend.o spi.o gpio.o \
+OBJ = radiosend.o radiorecv.o spi.o gpio.o \
 	at86rf2xx.o at86rf2xx-getset.o \
 	at86rf2xx-internal.o 
 
@@ -49,8 +49,14 @@ at86rf2xx.o: at86rf2xx.c $(RADIO_DEPS)
 radiosend.o: radiosend.c at86rf2xx.o 
 	$(CC) -c -o $(ODIR)$@ $< $(CFLAGS)   
 
+radiorecv.o: radiorecv.c at86rf2xx.o
+	$(CC) -c -o $(ODIR)$@ $< $(CFLAGS)
+
 send: $(OBJ)
 	$(CC) -o $@ $(ODIR)radiosend.o $(ODIR)at86rf2xx.o $(RADIO_OBJS) $(ODIR)spi.o $(ODIR)gpio.o $(CFLAGS)
+
+recv: $(OBJ)
+	$(CC) -o $@ $(ODIR)radiorecv.o $(ODIR)at86rf2xx.o $(RADIO_OBJS) $(ODIR)spi.o $(ODIR)gpio.o $(CFLAGS)
 
 $(OBJ): | mkdir
 
