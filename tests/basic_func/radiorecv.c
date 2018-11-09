@@ -45,13 +45,13 @@ int main() {
 	uint8_t buf[255];
 
 	printf("[radiosend.c] Sending RX_START command\n");
-	set_state(AT86RF2XX_STATE_RX_AACK_ON);
+	set_state(AT86RF2XX_TRX_STATUS__RX_ON);
 	printf("[radiosend.c] Sent RX_START command\n");
 	trx_status = reg_read(AT86RF2XX_REG__TRX_STATUS);
         printf("[radiosend.c] TRX_STATUS: 0x%x \n", trx_status);
 
 
-	while (trx_status == AT86RF2XX_STATE_RX_AACK_ON)
+	while (trx_status == AT86RF2XX_TRX_STATUS__RX_ON)
 		usleep(10000);
 
 	trx_status = reg_read(AT86RF2XX_REG__TRX_STATUS);
