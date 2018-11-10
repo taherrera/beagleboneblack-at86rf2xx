@@ -9,34 +9,20 @@
 #define CSGPIO 17 /* Not movable */
 
 int main() {
-	//spi_init(SPI_BUS);
-        //spi_acquire(SPI_BUS, SPI_CS, CLOCKMODE, SPI_FREQ);
-	//reg_read(AT86RF2XX_REG__TRX_STATUS) & AT86RF2XX_TRX_STATUS_MASK__TRX_STATUS;
-	//assert_awake();
-
-
 
 	printf("[radiosend.c] Initializing device");
 
 	/* Before starting, initialize */
 	init(CSGPIO, INTGPIO, SLEEPGPIO, RESETGPIO);
-	//spi_acquire(SPI_BUS, SPI_CS, CLOCKMODE, SPI_FREQ);
 
 	set_txpower(0);
 	uint16_t power = get_txpower();
 	printf("[radiosend.c] Tx radio power is %d dBm\n", power);
 
-	set_chan(11);
+	set_chan(26);
 	uint8_t channel = get_chan();
 	printf("[radiosend.c] Current radio channel is %d\n", channel);
 
-	//const uint8_t sram_offset = 0x05;
-	//uint8_t sram_data[5] = "hello";
-	//sram_write(sram_offset, sram_data, 5);
-	//printf("[radiosend.c] Wrote to sram:  %s to address %d\n", sram_data, sram_offset);
-	//uint8_t sram_buffer[5];
-	//sram_read(sram_offset, sram_buffer, 5);
-	//printf("[radiosend.c] Read from sram: %s from address %d\n", sram_buffer, sram_offset);
 
 
 	uint8_t trx_status = reg_read(AT86RF2XX_REG__TRX_STATUS);
@@ -45,12 +31,13 @@ int main() {
 
 	uint8_t buf[20];
 	/* Construct raw packet payload, length and FCS gets added in the chip */
+	/* Construct raw packet payload, length and FCS gets added in the kernel */
 	buf[0] = 0x21; /* Frame Control Field */
 	buf[1] = 0xc8; /* Frame Control Field */
 	buf[2] = 0x8b; /* Sequence number */
-	buf[3] = 0x30; /* Destination PAN ID 0x0230 */
-	buf[4] = 0x02; /* Destination PAN ID */
-	buf[5] = 0x30; /* Destination short address 0x0230 */
+	buf[3] = 0xff; /* Destination PAN ID 0xffff */
+	buf[4] = 0xff; /* Destination PAN ID */
+	buf[5] = 0x30; /* Destination short address 0x0002 */
 	buf[6] = 0x02; /* Destination short address */
 	buf[7] = 0x23; /* Source PAN ID 0x0023 */
 	buf[8] = 0x00; /* */
@@ -65,6 +52,7 @@ int main() {
 	buf[17] = 0xAA; /* Payload */
 	buf[18] = 0xBB; /* */
 	buf[19] = 0xCC; /* */
+
 
 	uint8_t loaded = tx_load(buf, sizeof(buf),0);
         printf("[radiosend.c] %d bytes loaded into device \n", loaded);
