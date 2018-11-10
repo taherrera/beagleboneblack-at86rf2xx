@@ -2,6 +2,8 @@
 #include "../../at86rf2xx/at86rf2xx.h"
 #include "../../periph/spi.h"
 #include <stdio.h>
+#include <time.h>
+#include <unistd.h>
 
 #define INTGPIO 48
 #define SLEEPGPIO 49
@@ -16,7 +18,7 @@ int main() {
 
 
 
-	printf("[radiosend.c] Initializing device");
+	printf("[radiorecv.c] Initializing device");
 
 	/* Before starting, initialize */
 	init(CSGPIO, INTGPIO, SLEEPGPIO, RESETGPIO);
@@ -26,36 +28,37 @@ int main() {
 	uint16_t power = get_txpower();
 	printf("[radiosend.c] Tx radio power is %d dBm\n", power);
 
-	set_chan(11);
+	set_chan(26);
 	uint8_t channel = get_chan();
-	printf("[radiosend.c] Current radio channel is %d\n", channel);
+	printf("[radiorecv.c] Current radio channel is %d\n", channel);
 
 	//const uint8_t sram_offset = 0x05;
 	//uint8_t sram_data[5] = "hello";
 	//sram_write(sram_offset, sram_data, 5);
-	//printf("[radiosend.c] Wrote to sram:  %s to address %d\n", sram_data, sram_offset);
-	//uint8_t sram_buffer[5];
-	//sram_read(sram_offset, sram_buffer, 5);
-	//printf("[radiosend.c] Read from sram: %s from address %d\n", sram_buffer, sram_offset);
 
 
 	uint8_t trx_status = reg_read(AT86RF2XX_REG__TRX_STATUS);
-	printf("[radiosend.c] TRX_STATUS: 0x%x \n", trx_status);
+	printf("[radiorecv.c] TRX_STATUS: 0x%x \n", trx_status);
 
 	uint8_t buf[255];
 
-	printf("[radiosend.c] Sending RX_START command\n");
+	printf("[radiorecv.c] Sending RX_START command\n");
 	set_state(AT86RF2XX_TRX_STATUS__RX_ON);
-	printf("[radiosend.c] Sent RX_START command\n");
+	printf("[radiorecv.c] Sent RX_START command\n");
 	trx_status = reg_read(AT86RF2XX_REG__TRX_STATUS);
-        printf("[radiosend.c] TRX_STATUS: 0x%x \n", trx_status);
+        printf("[radiorecv.c] RX_STATUS: 0x%x \n", trx_status);
 
-
-	while (trx_status == AT86RF2XX_TRX_STATUS__RX_ON)
-		usleep(10000);
-
+	int i;
+	while (trx_status == AT86RF2XX_TRX_STATUS__RX_ON){
+		usleep(1000000);
+		rx_read(buf, 127, 0);
+		for (i=0;i<127;i++)
+			printf("%x,", buf[i]);
+		printf("\n");
+		fflush(stdout);
+	}
 	trx_status = reg_read(AT86RF2XX_REG__TRX_STATUS);
-        printf("[radiosend.c] TRX_STATUS: 0x%x \n", trx_status);
+        printf("[radiorecv.c] TRX_STATUS: 0x%x \n", trx_status);
 	sleep(1);
 	return 0;
 }
