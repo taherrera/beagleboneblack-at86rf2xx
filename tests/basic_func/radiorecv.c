@@ -10,13 +10,8 @@
 #define RESETGPIO 60
 #define CSGPIO 17 /* Not movable */
 
-int main() {
-	//spi_init(SPI_BUS);
-        //spi_acquire(SPI_BUS, SPI_CS, CLOCKMODE, SPI_FREQ);
-	//reg_read(AT86RF2XX_REG__TRX_STATUS) & AT86RF2XX_TRX_STATUS_MASK__TRX_STATUS;
-	//assert_awake();
-
-
+int main()
+{
 
 	printf("[radiorecv.c] Initializing device");
 
@@ -42,7 +37,7 @@ int main() {
 
 	uint8_t buf[255];
 
-	printf("[radiorecv.c] Sending RX_START command\n");
+	printf("[radiosend.c] Sending RX_START command\n");
 	set_state(AT86RF2XX_TRX_STATUS__RX_ON);
 	printf("[radiorecv.c] Sent RX_START command\n");
 	trx_status = reg_read(AT86RF2XX_REG__TRX_STATUS);
@@ -57,6 +52,11 @@ int main() {
 		printf("\n");
 		fflush(stdout);
 	}
+        printf("[radiosend.c] TRX_STATUS: 0x%x \n", trx_status);
+
+	while (trx_status == AT86RF2XX_TRX_STATUS__RX_ON)
+		usleep(10000);
+
 	trx_status = reg_read(AT86RF2XX_REG__TRX_STATUS);
         printf("[radiorecv.c] TRX_STATUS: 0x%x \n", trx_status);
 	sleep(1);

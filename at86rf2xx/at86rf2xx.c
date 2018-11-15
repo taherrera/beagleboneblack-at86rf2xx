@@ -41,8 +41,6 @@
 //#endif
 
 
-
-
 //static int cs_pin;                         /**< chip select pin */
 //static int sleep_pin;                      /**< sleep pin */
 int reset_pin;                      /**< reset pin */
@@ -67,7 +65,7 @@ static void at86rf2xx_irq_handler(void)
 
 int init(int cs_pin_, int int_pin_, int sleep_pin_, int reset_pin_)
 {
-	#ifdef DEBUG
+	#ifdef ATDEBUG
 	printf("[at86rf2xx.c] Booting radio device.\n");
 	#endif
 
@@ -76,7 +74,10 @@ int init(int cs_pin_, int int_pin_, int sleep_pin_, int reset_pin_)
 	int_pin = int_pin_;
 	//sleep_pin = sleep_pin_;
 	reset_pin = reset_pin_;
+	#ifdef ATDEBUG
 	printf("[at86rf2xx.c] init: Reset pin = %d\n", reset_pin);
+	#endif
+
 	idle_state = AT86RF2XX_STATE_TRX_OFF;
 	state = AT86RF2XX_STATE_SLEEP;
 
@@ -85,19 +86,21 @@ int init(int cs_pin_, int int_pin_, int sleep_pin_, int reset_pin_)
 	//gpio_init(sleep_pin, (gpio_mode_t) GPIO_OUT);
 	gpio_init(int_pin, (gpio_mode_t) GPIO_IN);
 	sleep(1);
-	#ifdef DEBUG
+
+	#ifdef ATDEBUG
 	printf("[at86rf2xx.c] GPIO OK.\n");
 	#endif
 	//gpio_init(cs_pin, (gpio_mode_t) GPIO_OUT); automatically set by spi
 
 	/* initialise SPI */
-	//  Set up SPI
 	spi_init(SPI_BUS);
 	int res_spi = spi_acquire(SPI_BUS, SPI_CS, CLOCKMODE, SPI_FREQ);
 
-	if (res_spi != 0)
+	if (res_spi != 0){
 		printf("[at86rf2xx.c] ERROR INIT SPI\n");
-	#ifdef DEBUG
+		return -1;
+	}
+	#ifdef ATDEBUG
 	else
 		printf("[at86rf2xx.c] SPI OK.\n");
 	#endif
@@ -107,7 +110,7 @@ int init(int cs_pin_, int int_pin_, int sleep_pin_, int reset_pin_)
 	/*  set GPIOs */
 	//gpio_write(sleep_pin, 0);
 	gpio_write(reset_pin, 1);
-	#ifdef DEBUG
+	#ifdef ATDEBUG
 	printf("[at86rf2xx.c] GPIO write OK.\n");
 	#endif
 	/* TODO: atachInterrupt */
@@ -115,7 +118,7 @@ int init(int cs_pin_, int int_pin_, int sleep_pin_, int reset_pin_)
 
 	/* make sure device is not sleeping, so we can query part number */
 	assert_awake();
-	#ifdef DEBUG
+	#ifdef ATDEBUG
 	printf("[at86rf2xx.c] Asstert awake OK.\n");
 	#endif
 	/* test if the SPI is set up correctly and the device is responding */
@@ -166,10 +169,6 @@ void reset(void)
 
     /* enable safe mode (protect RX FIFO until reading data starts) */
     reg_write(AT86RF2XX_REG__TRX_CTRL_2, AT86RF2XX_TRX_CTRL_2_MASK__RX_SAFE_MODE);
-
-//#ifdef MODULE_AT86RF212B
-//    at86rf2xx_set_freq(dev, AT86RF2XX_FREQ_915MHZ);
-//#endif
 
     /* don't populate masked interrupt flags to IRQ_STATUS register */
     /*uint8_t tmp = at86rf2xx_reg_read(AT86RF2XX_REG__TRX_CTRL_1);
@@ -226,8 +225,11 @@ size_t send(uint8_t *data, size_t len)
     /* check data length */
     if (len > AT86RF2XX_MAX_PKT_LENGTH) {
         printf("[at86rf2xx.c] Error: Data to send exceeds max packet size.\n");
-        return 0;
+        return -1;
     }
+    #ifdef ATDEBUG
+    printf("[at86rf2xx.c] Prepare(), load(), exec()\n");
+    #endif
     tx_prepare();
     tx_load(data, len, 0);
     tx_exec();
@@ -268,6 +270,9 @@ void tx_exec(void)
     /* write frame length field in FIFO */
     sram_write(0, &(frame_len), 1);
     /* trigger sending of pre-loaded frame */
+    #ifdef ATDEBUG
+    printf("[at86rf2xx.c] Sending TX start to radio\n");
+    #endif
     reg_write(AT86RF2XX_REG__TRX_STATE, AT86RF2XX_TRX_STATE__TX_START);
     /*if (at86rf2xx.event_cb && (at86rf2xx.options & AT86RF2XX_OPT_TELL_TX_START)) {
         at86rf2xx.event_cb(NETDEV_EVENT_TX_STARTED, NULL);
