@@ -277,11 +277,11 @@ void tx_exec(void)
 size_t rx_len(void)
 {
     printf("[at86rf2xx.c] rx_len called \n");
-    uint8_t phr;
-    fb_read(&phr, 1);
+    uint8_t phr[2];
+    fb_read(phr, 1);
 
     /* ignore MSB (refer p.80) and substract length of FCS field */
-    return (size_t)((phr & 0x7f) - 2);
+    return (size_t)((phr[0] & 0x7f) - 2);
 }
 
 void rx_read(uint8_t *data, size_t len, size_t offset)

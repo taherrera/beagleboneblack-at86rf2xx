@@ -109,7 +109,7 @@ void fb_read(uint8_t *inbuff, const size_t len)
     #ifdef ATDEBUG
     printf("[at86rf2xx-internal.c] fb_read now calling transfer bytes\n");
     #endif
-    spi_transfer_bytes(SPI_BUS, SPI_CS, CONT, (void*) outbuff, (void*) inbuff, len); // was len+1
+    spi_transfer_bytes(SPI_BUS, SPI_CS, CONT, (void*) outbuff, (void*) inbuff, len+1); // was len+1
     //gpio_write(cs_pin, 1);
 }
 
