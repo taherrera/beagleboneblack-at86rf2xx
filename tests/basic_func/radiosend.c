@@ -2,6 +2,7 @@
 #include "../../at86rf2xx/at86rf2xx.h"
 #include "../../periph/spi.h"
 #include <stdio.h>
+#include <unistd.h>
 
 #define INTGPIO 48
 #define SLEEPGPIO 49
@@ -23,15 +24,12 @@ int main() {
 	uint8_t channel = get_chan();
 	printf("[radiosend.c] Current radio channel is %d\n", channel);
 
-
-
 	uint8_t trx_status = reg_read(AT86RF2XX_REG__TRX_STATUS);
 	printf("[radiosend.c] TRX_STATUS: 0x%x \n", trx_status);
 
-
 	uint8_t buf[20];
 	/* Construct raw packet payload, length and FCS gets added in the chip */
-	/* Construct raw packet payload, length and FCS gets added in the kernel */
+
 	buf[0] = 0x21; /* Frame Control Field */
 	buf[1] = 0xc8; /* Frame Control Field */
 	buf[2] = 0x8b; /* Sequence number */
@@ -54,27 +52,28 @@ int main() {
 	buf[19] = 0xCC; /* */
 
 
-	uint8_t loaded = tx_load(buf, sizeof(buf),0);
-        printf("[radiosend.c] %d bytes loaded into device \n", loaded);
+	//uint8_t loaded = tx_load(buf, sizeof(buf),0);
+        //printf("[radiosend.c] %d bytes loaded into device \n", loaded);
 
 	trx_status = reg_read(AT86RF2XX_REG__TRX_STATUS);
         printf("[radiosend.c] TRX_STATUS: 0x%x \n", trx_status);
 
-	printf("[radiosend.c] Preparing TX\n");
-	tx_prepare();
-	printf("[radiosend.c] TX prepared\n");
-	trx_status = reg_read(AT86RF2XX_REG__TRX_STATUS);
-        printf("[radiosend.c] TRX_STATUS: 0x%x \n", trx_status);
+	//printf("[radiosend.c] Preparing TX\n");
+	//tx_prepare();
+	//printf("[radiosend.c] TX prepared\n");
+	//trx_status = reg_read(AT86RF2XX_REG__TRX_STATUS);
+        //printf("[radiosend.c] TRX_STATUS: 0x%x \n", trx_status);
 
-	printf("[radiosend.c] Sending TX_START command\n");
-	tx_exec();
-	printf("[radiosend.c] Sent TX_START command\n");
-	trx_status = reg_read(AT86RF2XX_REG__TRX_STATUS);
-        printf("[radiosend.c] TRX_STATUS: 0x%x \n", trx_status);
-	while (trx_status != AT86RF2XX_STATE_BUSY_TX_ARET)
-		usleep(10000);
-	trx_status = reg_read(AT86RF2XX_REG__TRX_STATUS);
-        printf("[radiosend.c] TRX_STATUS: 0x%x \n", trx_status);
+	//printf("[radiosend.c] Sending TX_START command\n");
+	//tx_exec();
+	//printf("[radiosend.c] Sent TX_START command\n");
+	//trx_status = reg_read(AT86RF2XX_REG__TRX_STATUS);
+        //printf("[radiosend.c] TRX_STATUS: 0x%x \n", trx_status);
+	//while (trx_status != AT86RF2XX_STATE_BUSY_TX_ARET)
+	//	usleep(10000);
+	//trx_status = reg_read(AT86RF2XX_REG__TRX_STATUS);
+        //printf("[radiosend.c] TRX_STATUS: 0x%x \n", trx_status);
+	printf("[radiosend.c] Send operation\n");
 	send(buf,sizeof(buf));
 	sleep(1);
 	return 0;

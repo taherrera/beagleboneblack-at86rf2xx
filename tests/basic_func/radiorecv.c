@@ -2,19 +2,15 @@
 #include "../../at86rf2xx/at86rf2xx.h"
 #include "../../periph/spi.h"
 #include <stdio.h>
+#include <unistd.h>
 
 #define INTGPIO 48
 #define SLEEPGPIO 49
 #define RESETGPIO 60
 #define CSGPIO 17 /* Not movable */
 
-int main() {
-	//spi_init(SPI_BUS);
-        //spi_acquire(SPI_BUS, SPI_CS, CLOCKMODE, SPI_FREQ);
-	//reg_read(AT86RF2XX_REG__TRX_STATUS) & AT86RF2XX_TRX_STATUS_MASK__TRX_STATUS;
-	//assert_awake();
-
-
+int main()
+{
 
 	printf("[radiosend.c] Initializing device");
 
@@ -26,7 +22,7 @@ int main() {
 	uint16_t power = get_txpower();
 	printf("[radiosend.c] Tx radio power is %d dBm\n", power);
 
-	set_chan(11);
+	set_chan(26);
 	uint8_t channel = get_chan();
 	printf("[radiosend.c] Current radio channel is %d\n", channel);
 
@@ -42,14 +38,11 @@ int main() {
 	uint8_t trx_status = reg_read(AT86RF2XX_REG__TRX_STATUS);
 	printf("[radiosend.c] TRX_STATUS: 0x%x \n", trx_status);
 
-	uint8_t buf[255];
-
 	printf("[radiosend.c] Sending RX_START command\n");
 	set_state(AT86RF2XX_TRX_STATUS__RX_ON);
 	printf("[radiosend.c] Sent RX_START command\n");
 	trx_status = reg_read(AT86RF2XX_REG__TRX_STATUS);
         printf("[radiosend.c] TRX_STATUS: 0x%x \n", trx_status);
-
 
 	while (trx_status == AT86RF2XX_TRX_STATUS__RX_ON)
 		usleep(10000);

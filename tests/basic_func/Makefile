@@ -3,7 +3,7 @@
 CC=gcc
 
 # Compiler Flags
-CFLAGS=-I. -Wall -Dcpp_variable=DEBUG
+CFLAGS=-I. -Wall -DATDEBUG
 
 OBJ = radiosend.o radiorecv.o spi.o gpio.o \
 	at86rf2xx.o at86rf2xx-getset.o \
