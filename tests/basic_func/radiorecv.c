@@ -27,15 +27,9 @@ int main()
 	uint8_t channel = get_chan();
 	printf("[radiorecv.c] Current radio channel is %d\n", channel);
 
-	//const uint8_t sram_offset = 0x05;
-	//uint8_t sram_data[5] = "hello";
-	//sram_write(sram_offset, sram_data, 5);
-
 
 	uint8_t trx_status = reg_read(AT86RF2XX_REG__TRX_STATUS);
 	printf("[radiorecv.c] TRX_STATUS: 0x%x \n", trx_status);
-
-	uint8_t buf[255];
 
 	printf("[radiosend.c] Sending RX_START command\n");
 	set_state(AT86RF2XX_TRX_STATUS__RX_ON);
@@ -43,19 +37,23 @@ int main()
 	trx_status = reg_read(AT86RF2XX_REG__TRX_STATUS);
         printf("[radiorecv.c] RX_STATUS: 0x%x \n", trx_status);
 
-	int i;
-	while (trx_status == AT86RF2XX_TRX_STATUS__RX_ON){
-		usleep(1000000);
-		rx_read(buf, 127, 0);
-		for (i=0;i<127;i++)
-			printf("%x,", buf[i]);
-		printf("\n");
-		fflush(stdout);
-	}
-        printf("[radiosend.c] TRX_STATUS: 0x%x \n", trx_status);
-
 	while (trx_status == AT86RF2XX_TRX_STATUS__RX_ON)
-		usleep(10000);
+		trx_status = reg_read(AT86RF2XX_REG__TRX_STATUS);
+
+	while (trx_status == AT86RF2XX_TRX_STATUS__BUSY_RX)
+		trx_status = reg_read(AT86RF2XX_REG__TRX_STATUS);
+
+	int i;
+	printf("[radiorecv.c] Received something\n");
+	int recv_len = rx_len();
+	printf("[radiorecv.c] Received len: %d\n",recv_len);
+	uint8_t buf[255];
+	rx_read(buf, recv_len, 0);
+	printf("[radiorecv.c] Got buf\n");
+	for (i=0;i<recv_len;i++)
+		printf("%x,", buf[i]);
+	printf("\n");
+	fflush(stdout);
 
 	trx_status = reg_read(AT86RF2XX_REG__TRX_STATUS);
         printf("[radiorecv.c] TRX_STATUS: 0x%x \n", trx_status);

@@ -281,6 +281,7 @@ void tx_exec(void)
 
 size_t rx_len(void)
 {
+    printf("[at86rf2xx.c] rx_len called \n");
     uint8_t phr;
     fb_read(&phr, 1);
 

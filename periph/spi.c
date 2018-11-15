@@ -50,7 +50,7 @@ void spi_init(spi_t bus)
 		printf("[spi.c] Error opening spidev_fd !\n");
 	tr.delay_usecs = 0;
 	tr.bits_per_word = 8;
-	#ifdef DEBUG
+	#ifdef SPIDEBUG
 	printf("[spi.c] spidev_fd = %d\n",spidev_fd);
 	#endif
 	return;
@@ -127,7 +127,7 @@ uint8_t spi_transfer_byte(spi_t bus, spi_cs_t cs, bool cont, uint8_t out)
         ret = ioctl(spidev_fd, SPI_IOC_MESSAGE(2), &tr);
 
         if (ret < 1){
-                printf("[spi.c] can't send spi message");
+                printf("[spi.c] ERROR can't send spi message");
         }
 
 	return (uint8_t) inbuf;
@@ -146,20 +146,18 @@ void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont, const void *out, void
 	tr.rx_buf = (uint32_t) auxin;
 
 	tr.len = len;
-	#ifdef DEBUG
+	#ifdef SPIDEBUG
 	printf("[spi.c] Making Transfer with fd: %d, %d bits \n",spidev_fd,tr.bits_per_word);
 	#endif
 	/* Make a Transfer */
 	ret = ioctl(spidev_fd, SPI_IOC_MESSAGE(3), &tr);
 
 	if (ret == 1){
+		printf("[spi.c] ERROR ret: %d\n", ret);
 		error(1,1,"[spi.c] ERROR can't send spi message");
 	}
-	#ifdef DEBUG
-	printf("[spi.c] ret: %d\n", ret);
-	printf("[spi.c] Mem moving \n");
-	#endif
-	/* The first byte read is always 0, correct this */
+
+	/* The first byte read is always 0, this corrects it */
 	memmove(in, auxin + 1,sizeof in - sizeof *in);
 
 }

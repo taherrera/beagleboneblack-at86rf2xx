@@ -34,7 +34,7 @@ int gpio_init(gpio_t pin, gpio_mode_t mode)
 			defined = 1;
 		}
 	}
-	#ifdef DEBUG
+	#ifdef GPIODEBUG
 	printf("[gpio.c] gpio_init: defined = %d \n", defined);
 	printf("[gpio.c] gpio_init: defined_pins_counter = %d \n", defined_pins_counter);
 	#endif
@@ -53,8 +53,8 @@ int gpio_init(gpio_t pin, gpio_mode_t mode)
 			return 1;
 		}
 
-		#ifdef DEBUG
-		printf("[gpio.c] gpio_init: Creating gpio %d using export fileptr: %s \n",pin, fptr);
+		#ifdef GPIODEBUG
+		printf("[gpio.c] gpio_init: Creating gpio %d using export fileptr: %d \n",pin, (uint16_t) fptr);
 		#endif
 
 		/* Create gpio{$pin} file */
@@ -63,7 +63,7 @@ int gpio_init(gpio_t pin, gpio_mode_t mode)
 
 	}
 
-	#ifdef DEBUG
+	#ifdef GPIODEBUG
 	printf("[gpio.c] gpio_init: defined_pins_counter = %d \n", defined_pins_counter);
 	#endif
 
@@ -135,7 +135,7 @@ void gpio_write(gpio_t pin, int value)
 		return;
 	}
 
-	#ifdef DEBUG
+	#ifdef GPIODEBUG
 	printf("[gpio.c] gpio_write: Writing %d to file %p \n",value, gpio_file_path);
 	#endif
 	

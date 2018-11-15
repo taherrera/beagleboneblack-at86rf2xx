@@ -52,12 +52,12 @@ uint8_t reg_read(const uint8_t addr)
     uint8_t readCommand = addr | AT86RF2XX_ACCESS_REG | AT86RF2XX_ACCESS_READ;
     uint8_t outbuff[2] = {readCommand, 0x00};
     //gpio_write(cs_pin, 0);
-    #ifdef DEBUG
+    #ifdef ATDEBUG
     printf("[at86rf2xx-internal.c] Transfering bytes\n");
     #endif 
     spi_transfer_bytes(SPI_BUS, SPI_CS, CONT, (void*) outbuff, (void*) inbuff, 2);
     //gpio_write(cs_pin, 1);
-    #ifdef DEBUG
+    #ifdef ATDEBUG
     printf("[at86rf2xx-internal.c] Bytes transfered\n");
     #endif
     return (uint8_t) inbuff[0];
@@ -95,6 +95,10 @@ void sram_write(const uint8_t offset, const uint8_t *data, const size_t len)
 
 void fb_read(uint8_t *inbuff, const size_t len)
 {
+    #ifdef ATDEBUG
+    printf("[at86rf2xx-internal.c] fb_read called\n");
+    #endif
+
     uint8_t readCommand = AT86RF2XX_ACCESS_FB | AT86RF2XX_ACCESS_READ;
     //gpio_write(cs_pin, 0);
     char outbuff[256] = {readCommand};
@@ -102,7 +106,10 @@ void fb_read(uint8_t *inbuff, const size_t len)
     for (b=0; b<len; b++) {
       outbuff[b+1] = 0x00;
     }
-    spi_transfer_bytes(SPI_BUS, SPI_CS, CONT, (void*) outbuff, (void*) inbuff, len+1);
+    #ifdef ATDEBUG
+    printf("[at86rf2xx-internal.c] fb_read  now calling transfer bytes\n");
+    #endif
+    spi_transfer_bytes(SPI_BUS, SPI_CS, CONT, (void*) outbuff, (void*) inbuff, len); // was len+1
     //gpio_write(cs_pin, 1);
 }
 
@@ -119,7 +126,7 @@ uint8_t get_status(void)
 
 void assert_awake(void)
 {
-    #ifdef DEBUG
+    #ifdef ATDEBUG
     printf("[at86rf2xx-internal.c] Asserting Awake\n");
     #endif
     if(get_status() == AT86RF2XX_STATE_SLEEP) {
@@ -142,7 +149,10 @@ void hardware_reset(void)
     assert_awake();
 
     /* trigger hardware reset */
+    #ifdef ATDEBUG
     printf("[at86rf2xx-internal.c] hardware_reset: reset_pin = %d\n", reset_pin);
+    #endif 
+
     gpio_write(reset_pin, 0);
     usleep(AT86RF2XX_RESET_PULSE_WIDTH);
     gpio_write(reset_pin, 1);
