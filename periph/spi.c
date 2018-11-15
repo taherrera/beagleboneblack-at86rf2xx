@@ -17,6 +17,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <error.h>
+#include <errno.h>
 #include <time.h>
 #include <getopt.h>
 #include <fcntl.h>
@@ -32,7 +33,6 @@
 
 #define UENVDIR "/boot/uEnv.txt"
 #define ENABLESPI "capemgr.enable_partno=BB-SPI0-01"
-//#define DEBUG
 
 static int spidev_fd;
 static char device[] = "/dev/spidev%d.0"; 
@@ -51,7 +51,7 @@ void spi_init(spi_t bus)
 	tr.delay_usecs = 0;
 	tr.bits_per_word = 8;
 	#ifdef SPIDEBUG
-	printf("[spi.c] spidev_fd = %d\n",spidev_fd);
+	printf("[spi.c] spi_init: success: spidev_fd = %d\n",spidev_fd);
 	#endif
 	return;
 }
@@ -146,7 +146,7 @@ void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont, const void *out, void
 	tr.rx_buf = (uint32_t) auxin;
 
 	tr.len = len;
-	#ifdef SPIDEBUG
+	#ifdef SPIDEBUGV
 	printf("[spi.c] Making Transfer with fd: %d, %d bits \n",spidev_fd,tr.bits_per_word);
 	#endif
 	/* Make a Transfer */
@@ -154,11 +154,16 @@ void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont, const void *out, void
 
 	if (ret == 1){
 		printf("[spi.c] ERROR ret: %d\n", ret);
-		error(1,1,"[spi.c] ERROR can't send spi message");
+		printf("[spi.c] ERROR spidev_fd: %d, errno: %s \n", spidev_fd, strerror(errno));
+		printf("[spi.c] ERROR can't send spi message");
+		return;
 	}
 
+	#ifdef SPIDEBUGV
+	printf("[spi.c] Memmove\n");
+	#endif
 	/* The first byte read is always 0, this corrects it */
 	memmove(in, auxin + 1,sizeof in - sizeof *in);
-
+	return;
 }
 

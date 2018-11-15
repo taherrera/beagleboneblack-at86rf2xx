@@ -36,11 +36,6 @@
 #include "at86rf2xx.h"
 
 
-//#ifdef MODULE_AT86RF212B
-//    at86rf2xx_freq_t freq;              /**< currently used frequency */
-//#endif
-
-
 //static int cs_pin;                         /**< chip select pin */
 //static int sleep_pin;                      /**< sleep pin */
 int reset_pin;                      /**< reset pin */

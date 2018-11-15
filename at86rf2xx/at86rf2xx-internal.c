@@ -107,7 +107,7 @@ void fb_read(uint8_t *inbuff, const size_t len)
       outbuff[b+1] = 0x00;
     }
     #ifdef ATDEBUG
-    printf("[at86rf2xx-internal.c] fb_read  now calling transfer bytes\n");
+    printf("[at86rf2xx-internal.c] fb_read now calling transfer bytes\n");
     #endif
     spi_transfer_bytes(SPI_BUS, SPI_CS, CONT, (void*) outbuff, (void*) inbuff, len); // was len+1
     //gpio_write(cs_pin, 1);
